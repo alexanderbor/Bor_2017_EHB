@@ -1,0 +1,294 @@
+---
+title: "Paper 2 - Study 1 experimental report"
+author: 'Alexander Bor'
+date: '2016-05-11'
+output:
+  html_document: default
+  pdf_document:
+    latex_engine: xelatex
+---
+
+
+```{r, echo=FALSE, warning=FALSE}
+
+library(pander)
+library(rio)
+library(tidyr)
+# rawdata <- import("https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S1.csv", na = "", check.names=TRUE) 
+# 
+# names(rawdata) <- gsub(x = names(rawdata),
+#                         pattern = "\\-",
+#                         replacement = ".")
+
+rawdata <- import("https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S1.csv", na = "", fread = F) 
+
+
+```
+
+## Hypothesis[^1]
+
+### What question was the experiment designed to address? 
+How information on domain-specific competence is encoded in social interactions?
+
+### What are the specific hypotheses to be tested? 
+Whether there is significant categorization along various levels (high vs low) of contributions to common food pool. 
+
+
+## Subjects and Context 
+
+Alltogether 160 participants entered the survey. 6 participants were not allowed to complete the survey because their IP address was detected to be from outside of the US, leaving us with 154 participants (M~age~= `r round(mean(rawdata$age, na.rm = T), 1)`, N~female~ = `r sum(rawdata$sex == 2, na.rm = T)`). 
+
+### Eligibility and exclusion criteria for participants 
+
+- __Why was this subject pool selected?__ MTURK offers an easily available, cheap and relatively diverse subject pool. 
+- __Who was eligible to participate in the study?__ Registered MTurkers living in the US, success rate min 97%, and min 1000 completed HITs. 
+- __What would result in the exclusion of a participant?__ All participants who completed the study are analysed. 
+- __Were any aspects of recruitment changed (such as the exclusion criteria) after recruitment began?__ Nope.  
+
+### Procedures used to recruit and select participants 
+
+### Incentives
+
+- __What incentives were offered and how were they administered?__ Participants were offered $0.55, which they received if they submitted the unique survey code displayed at the end of the assignment. 
+
+
+### When was the data collected? 
+All participants were recruited and all data was collected on February 23, 2016, in an hour. There were no follow ups. 
+
+## Allocation method 
+
+### What was the randomization procedure? 
+
+There were no control and treatment groups in this study - this it is not strictly speaking an experiment. Categorization effects were measured with the Who-said-what procedure. 
+
+
+## Procedure & Treatments 
+
+### A description of the procedure. 
+
+1. Participants were introduced to the task and were asked to provide the MTURK IDs. 
+2. Participants then read the cover story about people in the island. 
+3. Participants were presented with the 8 targets with each picture-action pair presented for 15 seconds. 
+4. In a distractor task, participants were asked to list as many countries as they could in 60 seconds. 
+5. In a surprise recall, participants were asked which participant did each of the actions (sentences). 
+6. In a trait evaluations participant indicated for each target how much they would trust him and how much they would be willing to be on the same team with him. 
+7. Finally participants provided basic demographic information (age & gender). 
+
+### Description of interventions. 
+
+#### Introduction 
+"In today's study you'll be learning about a group of people who were traveling together on a small chartered plane. While crossing the Pacific Ocean, the plane hit a violent storm and was forced very far off course. A bolt of lightning ripped through the plane and damaged the electrical system as well as one of the engines. With no radio and failing power, the pilot managed to crash land on a small island. The pilot died during the impact and many of the passengers were seriously injured. For two days the passengers waited by the plane for help. They eventually ate all the food they had. 
+
+Realizing that they might be on the island for a while and that they needed supplies, those who were not injured decided to go out and collect food. They knew that they needed to work together and cooperate so that everyone, including those who were seriously injured, would survive. Everyone who was going out searching agreed that most of the food they found they would bring back and share with the entire group, although they could also keep some for themselves. Each person carried a bag to collect food as well as a spear made from wood found near the crash site. In order to cover more ground, each person went out on their own. 
+ 
+In the followings, you will be presented with each passenger one at a time. We will ask you to look at pictures of these persons and to read about their actions. Try to gain an impression of each individual.
+
+Each portrait will be shown for 15 seconds, and the next portrait will come up automatically. So you do not have to press any keys during the introduction of these people. Just let yourself form an impression of them.
+
+Click the >> button when you are ready."
+
+### Sentences: 
+
+Participants were displayed the following diagnostic sentences (the sen01p refers to the variable name and the valence of the given sentence):
+
+####Group 1.
+- sen01p - Even after cougars had been seen by the pineapple trees, he went and got for the group the copious armfuls of fruit he had seen there earlier. 
+- sen02n - He risked going to a dangerous part of the island to collect the few kiwi fruit he knew grew there and then took them to the group.
+- sen03p - He went through a rapidly flooding valley during a rainstorm and gathered for the group the huge tasty mangos he had seen there.
+- sen04n - Moving from precarious tree-top to precarious tree-top, he collected for the group a pair of finger-sized bananas he had seen from the ground.
+- sen05n - He got food for the group by climbing one of the highest trees on the island to collect the few cashews he saw at the top.
+- sen06p - Seeing numerous large lobsters there, he swam far out into treacherous open waters and collected them to bring to camp. 
+- sen07p - He managed to get many cups worth of honey for the group by carefully moving through a dense cloud of angry bees.
+- sen08n - Moving carefully as he waded through a river full of deadly piranhas, he hunted a lone duck and took it to the group.
+
+
+####Group 1. inverse
+- sen09n - Even after cougars had been seen by the pineapple trees, he went and got for the group the handful of fruit he had seen there earlier. 
+- sen10p - He risked going to a dangerous part of the island to collect the ample, ripe kiwi fruit he knew grew there and then took them to the group. 
+- sen11n - He went through a rapidly flooding valley during a rainstorm and gathered for the group the little mangos he had seen there. 
+- sen12p - Moving from precarious tree-top to precarious tree-top, he collected for the group many bunches of yellow bananas he had seen from the ground. 
+- sen13p - He got food for the group by climbing one of the highest trees on the island to collect the pounds and pounds of cashews he saw at the top. 
+- sen14n - Seeing a solitary lobster there, he swam far out into treacherous open waters and collected it to bring to camp. 
+- sen15n - He managed to get a few thimbles worth of honey for the group by carefully moving through a dense cloud of angry bees.
+- sen16p - Moving carefully as he waded through a river full of deadly piranhas, he hunted a flock of ducks and took most to the group. 
+
+
+####Group 2. 
+- sen17p - He noticed a large patch of peaches in the grove at the top of a perilous cliff and climbed up to gather loads to bring back for the group. 
+- sen18n - After someone else dropped a pair of oranges into a cave, he ventured into the dark alone to get them and bring them to camp. 
+- sen19p - Late in the day he brought back to camp the bags and bags worth of strawberries he collected in an area full of dangerous bears. 
+- sen20n - He scaled the sheer face of a tall vertical mountain and gathered for the group the two or three pears he saw growing there.
+- sen21n - Seeing a small sea bass, he exposed himself to the hazardous waves on the rocks of the bay so he could catch it to bring to the group. 
+- sen22p - To bring back to the group the large number of crabs he could see in the bay, he waded into the bay's shark-infested shallows. 
+- sen23p - At the very edge of a quickly moving waterfall, he speared the twenty or thirty snapper he saw there and took them to camp. 
+- sen24n - To get food for the group, he risked drowning by holding his breath long enough to swim to the depth where he saw that a small group of shrimp lived.
+
+
+####Group 2. inverse
+- sen25n - He noticed a few peaches in the grove at the top of a perilous cliff and climbed up to gather them to bring back for the group.
+- sen26p - After someone else dropped a great many juicy oranges into a cave, he ventured into the dark alone to get them and bring them to camp.
+- sen27n - Late in the day he brought back to camp the handful of strawberries he collected in an area full of dangerous bears.
+- sen28p - He scaled the sheer face of a tall vertical mountain and gathered for the group the tons of pears he saw growing there.
+- sen29p - Seeing many huge sea bass, he exposed himself to the hazardous waves on the rocks of the bay so he could catch them to bring to the group.
+- sen30n - To bring back to the group the few crabs he could see in the bay, he waded into the bay's shark-infested shallows.
+- sen31n - At the very edge of a quickly moving waterfall, he speared the single snapper he saw there and took it to camp.
+- sen32p - To get food for the group, he risked drowning by holding his breath long enough to swim to the depth where he saw that an enormous group of shrimp lived.
+
+### How and when manipulations or interventions were administered? 
+
+The following parameters were randomly presented: 
+
+- There have been two sets of sentences and each set of sentences were presented in two orders, leading to 4 groups.
+- The specific order of the sentences was randomized within each group, whereas the sequence of the valence of the sentences was pseudo-randomized either to be pnpnnppn (where p stands for positive (high competence) and n for negative (low competence)) or its inverse (npnppnnp). 
+- The order of the target pictures (faces) was pseudo randomized and kept constant across all subjects.
+- At the surprise recall phase, the order of the sentences and the appearance of the target faces was randomized. 
+- At the target trait evaluation phase the order of the targets as well as the order of the traits (team-mate and competence) were randomly presented. 
+
+```{r, echo=F}
+panderOptions("digits", 2) 
+
+age <- tapply(rawdata$age, rawdata$DO.BR.FL_19, mean)
+sex <- tapply(rawdata$sex, rawdata$DO.BR.FL_19, mean)
+mytable <- rbind(age, sex)
+colnames(mytable) <- c("Group 1", "Group 1 inv.", "Group 2", "Group 2 inv.")
+rownames(mytable) <- c("Mean age", "Share of women")
+
+pander(mytable)
+```
+
+- __Method of delivery:__ Participants completed the survey implemented in Qualtrics on their own computers. 
+
+
+### Time span
+
+- __How long did each experiment last?__ According to the MTurk estimate, on average participants took 8 minutes 40 seconds to submit the HIT.  
+
+## Results 
+
+### Outcome Measures and Covariates 
+
+__sen1 - sen32__ In the surprise recall, each sentence was presented with the question: "Who did this: ..."
+
+In the trait evaluations, each target was presented with the following two questions: 
+
+- __team1 - team8__ Would you be willing to have this person on your "team"? 
+- __comp1 - comp8__ To what extent is this person competent? 
+
+__Categorization scores__ 
+
+Each answer in the surprise recall was categorized as correct, a within category error or a between category error. Following standards the number of between category errors was multiplied by 0.75 to correct for different base rates. A final categorization score is defined as the difference between within category and between category errors with positive numbers indicating evidence for more categorization. 
+
+The following statistical tests were planned: 
+
+- Are the categorization scores significantly different from 0? 
+- Are competent targets rated higher on average on competence and desirability as team member?
+
+
+### CONSORT Participant Flow Diagram 
+
+Does not seem relevant as no info on exposure vs participation and no attrition. 
+
+
+### Statistical Analysis 
+
+```{r, echo = F }
+#Subset to relevant data
+data <- rawdata[, 108:165]
+data <- data %>% #gather randomization info for each t.group 
+        gather("group", "rand", 55:58, na.rm = T)
+data <- data[, c(-33, -42, -53, -54)]        
+
+
+######################
+# Categorize responses
+######################
+
+p <- data.frame() #data frame to store response categorization
+positive <- matrix(NA, nrow = nrow(data), ncol = 4) #matrix to store which faces are positive
+negative <- matrix(NA, nrow = nrow(data), ncol = 4) #matrix to store which faces are negative
+
+#for each respondent
+for(i in 1:nrow(data)){
+        one <- data.frame()
+        matr <- data.frame()
+        #find randomization variable and make it into a temporary matrix 
+        one <- data.frame(matrix(strsplit(data$rand[i], "\\|")[[1]], 8, 2, byrow = T))
+        names(one) <- c("face", "sen")
+        #add a column to the matrix which will tell if face is pos or neg
+        #i suspect this will be better ordered by sen 
+        matr <- extract(one, sen, c("sen", "posneg"), "...(..)(.)", convert = T) 
+        matr <- matr[order(matr$sen),]
+        #extract value from face (stripe "f")
+        matr <- extract(matr, face, "face", ".(.)", convert = T)
+        positive[i, 1:4] <- matr$face[matr$posneg == "p"]
+        negative[i, 1:4] <- matr$face[matr$posneg == "n"]
+        
+        
+        #loop through and categorize all 32 answers
+        for(j in 1:32){
+                #NA: other treatment group.
+                if(is.na(data[i, j])) {
+                        p[i, j] <- NA
+                #correct: response (face) = randomiz matrix (face)
+                } else if(data[i, j] == matr$face[matr$sen == j]) { 
+                        p[i, j] <- 1 
+                #in category: response (face - posneg) = randomiz matrix (posneg)
+                } else if(matr$posneg[matr$face == data[i, j]] == matr$posneg[matr$sen == j]){
+                        p[i, j] <- 2       
+                #out category: all other :) 
+                } else  p[i, j] <- 3
+        }
+        
+        #sum up answers
+        data$corr[i] <- sum(p[i,] == 1, na.rm = T)
+        data$within[i] <- sum(p[i, ] == 2, na.rm = T)
+        data$between[i] <- sum(p[i, ] == 3, na.rm = T)
+}
+
+#correct for differing base rates. 
+data$between <- data$between * 0.75
+
+#calculate categorization score
+data$catscore <- data$within - data$between 
+
+print("is the categorization score significantly different from 0?")
+t.test(data$catscore)
+
+#calculate effect size (r) from t statistic and df
+# sqrt(0.29^2 / (0.29^2 + 153))
+
+
+##################
+#Trait evaluations
+##################
+
+for(i in 1:nrow(data)){
+        #Competence
+        data$highcomp[i] <- rowMeans(data[i , 40 + positive[1, ]])
+        data$lowcomp[i] <- rowMeans(data[i , 40 + negative[1, ]])
+        
+        #Team
+        data$highteam[i] <- rowMeans(data[i , 32 + positive[1, ]])
+        data$lowteam[i] <- rowMeans(data[i , 32 + negative[1, ]])
+}
+
+data$compdif <- data$highcomp - data$lowcomp
+data$teamdif <- data$highteam - data$lowteam
+
+print("Is there a significant difference in competence ratings?")
+t.test(data$compdif)
+
+print("Is there a significant difference in desirability as teammate?")
+t.test(data$teamdif)
+
+```
+
+
+## Other 
+
+- This data collection was supported by a grant from AUFF. 
+- Replication data set is available through https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S1.csv
+
+
+
+[^1]: This report is based on Gerber, Alan, Kevin Arceneaux, Cheryl Boudreau, Conor Dowling, Sunshine Hillygus, Thomas Palfrey, Daniel R. Biggers, and David J. Hendry. 2014. "Reporting Guidelines for Experimental Research: A Report from the Experimental Research Section Standards Committee." Journal of Experimental Political Science 1 (01): 81-98.
