@@ -1,0 +1,6 @@
+{
+  "name": "Paper2",
+  "tagline": "Data and code for my study on the role of competence in social evaluation",
+  "body": "#Data and code for my study on the role of competence in social evaluation\r\n\r\n##Files: \r\n- **P2_S1.csv** is the raw data from Study 1 replicating the results from Delton and Robertson's (2012) Study 4.\r\n- **P2_S2_pre2.csv** is the raw data with pre-test of new experimental manipulations (sentences signalling incompetence). \r\n- **P2_S2.csv** is raw data from Study 2 modifying Delton and Robertson (2012). \r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
