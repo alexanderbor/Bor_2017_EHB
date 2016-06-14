@@ -4,6 +4,7 @@
 This repository contains detailed experimental protocols adhering to the standards set by Gerber et al (2014) for each of the four studies. You can find them in the following links: 
 - [Study 1 protocol](p2_s1_protocol.Rmd)
 - [Study 2 protocol](p2_s2_protocol.Rmd)
+- [Study 3 protocol](p2_s3_protocol.Rmd)
 
 ##Files: 
 - **P2_S1.csv** is the raw data from Study 1 replicating the results from Delton and Robertson's (2012) Study 4.

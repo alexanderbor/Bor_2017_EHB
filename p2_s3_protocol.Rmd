@@ -1,0 +1,288 @@
+---
+title: "Paper 2 - Study 3 experimental report"
+author: 'Alexander Bor'
+date: '2016-06-13'
+output:
+  html_document: default
+  pdf_document:
+    latex_engine: xelatex
+---
+
+
+```{r, include = F}
+
+library(pander)
+library(rio)
+library(tidyr)
+library(dplyr)
+
+rawdata <- import("https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S3.csv", na = "", fread = F) 
+```
+
+## Hypothesis
+
+### What question was the experiment designed to address? 
+How information on domain-specific competence is encoded in social interactions?
+
+### What are the specific hypotheses to be tested? 
+1. Whether there is significant categorization along various levels (high vs low) of foraging skills. 
+2. Whether priming leader evaluation psychology increases the extent of encoding. 
+
+
+## Subjects and Context 
+
+Alltogether `r nrow(rawdata)` participants entered the survey. `r sum(is.na(rawdata$Q2))` people were not allowed to participate because their IP address was detected to be from outside of the US and `r sum(rawdata$Finished == 0)` participants have not finished the entire survey, leaving us with `r nrow(rawdata) - sum(is.na(rawdata$Q2)) - sum(rawdata$Finished == 0)` participants (M~age~= `r round(mean(rawdata$age, na.rm = T), 1)`, N~female~ = `r sum(rawdata$sex == 2, na.rm = T)`). 
+
+### Eligibility and exclusion criteria for participants 
+
+- __Why was this subject pool selected?__ MTURK offers an easily available, cheap and relatively diverse subject pool. 
+- __Who was eligible to participate in the study?__ Registered MTurkers living in the US, success rate min 97%, and minimum 1000 completed HITs. Participants of Study 1 were _not_ eligible to participate. 
+- __What would result in the exclusion of a participant?__ All participants who completed the study are included in the analysis. 
+- __Were any aspects of recruitment changed (such as the exclusion criteria) after recruitment began?__ No. 
+
+### Procedures used to recruit and select participants 
+
+### Incentives
+
+- __What incentives were offered and how were they administered?__ Participants were offered $0.5, which they received if they submitted the unique survey code displayed at the end of the assignment. 
+
+
+### When was the data collected? 
+Data was collected in two waves, first starting at March 10, and then starting at March 29, 2016. Both waves ended in a few hours. There were no follow ups. 
+
+## Allocation method 
+
+### What was the randomization procedure? 
+
+Participants were randomly assigned by Qualtrics to a control group (peer prime, essentially a replication of Study 2) or a treatment group (leader prime). 
+
+## Procedure & Treatments 
+
+### A description of the procedure. 
+
+1. Participants were introduced to the task and were asked to provide the MTURK IDs. 
+2. Participants then read the cover story about people on the island. __Participants in the treatment group were asked to decided who they would vote for from the targets.__
+3. Participants were presented with the 8 targets with each picture-action pair presented for 15 seconds. 
+4. In a distractor task, participants were asked to list as many countries as they could in 60 seconds. 
+5. __The treatment group was asked to select the target they would prefer to be their leader.__
+6. In a surprise recall, participants were asked which participant did each of the actions (sentences). 
+7. Finally participants provided basic demographic information (age & gender). 
+
+### Description of interventions. 
+
+#### Introduction 
+
+!["Mood setter"](/Users/szasulja/Google Drive/aarhus/Paper 2/expertvagabond_com.jpg) 
+
+"In today's study you'll be learning about a group of people who were traveling together on a small chartered plane, which hit a violent storm and damaged the electrical system as well as one of the engines. Luckily the pilot managed to crash land on a small island, but he died during the impact and many of the passengers were seriously injured. For two days the passengers waited by the plane for help. They eventually ate all the food they had. 
+
+Realizing that they might be on the island for a while and that they needed supplies, those who were not injured decided to work together and cooperate so that everyone, including those who were seriously injured, would survive. They all agreed that they had to collect food and share it with the entire group. In order to cover more ground, each person went out on their own. 
+
+/ _All the survivors agreed that in order to coordinate their efforts and resolve potential conflicts they need to elect a leader. This is planned to take place next evening by the campfire with everyone present._
+
+You will be presented with passengers one at a time. We will ask you to look at pictures of these persons and to read about their actions. __Try to gain an impression of each individual!__ / __Try to gain an impression of who you would vote for to become the leader of the group!__ 
+
+Each portrait will be shown for 15 seconds, and the next portrait will come up automatically. So you do not have to press any keys during the introduction of these people. Just let yourself form an impression of them.
+
+Click the >> button when you are ready."
+
+### Sentences: 
+
+Participants were displayed the following diagnostic sentences. Thus "sen01p" refers to the variable name and the valence of the given sentence. variable name from Study 1 is presented in parentheses)
+
+
+__Competent actions - taken from Delton and Robertson 2012__ 
+
+- sen01p (comp07) Moving from precarious tree-top to precarious tree-top, he collected for the group many bunches of yellow bananas he had seen from the ground. 
+- sen02p (comp08) He scaled the sheer face of a tall vertical mountain and gathered for the group the tons of pears he saw growing there.
+- sen03p (comp13) At the very edge of a quickly moving waterfall, he speared the twenty or thirty snapper he saw there and took them to camp. 
+- sen04p (comp15) Seeing numerous large lobsters there, he swam far out into treacherous open waters and collected them to bring to camp. 
+
+__Incompetent actions - own addition with modification of Delton & Robertson 2012__
+
+- sen05n (inco3) Even after cougars had been seen by the pineapple trees, he went there to gather the copious armfuls of fruit he had seen there earlier, but he mistook a small rodent for a predator, ran away and was too embarrassed to return. 
+- sen06n (inco2) After someone else dropped a great many juicy oranges into a cave, he ventured into the dark but got scared before finding the fruits. 
+- sen07n (inco14) Hunting for a flock of duck, he accidentally fell into a river and gave up his efforts. 
+- sen08n (inco16) In an attempt to collect many cups worth of honey, he clumsily moved through a dense cloud of angry bees, startled them, was attacked by the bees and ran away without any honey.
+
+### Target photographs
+
+!["Target 1"](/Users/szasulja/Google Drive/aarhus/Paper 2/1.png) 
+!["Target 2"](/Users/szasulja/Google Drive/aarhus/Paper 2/2.png) 
+!["Target 3"](/Users/szasulja/Google Drive/aarhus/Paper 2/3.png) 
+!["Target 4"](/Users/szasulja/Google Drive/aarhus/Paper 2/4.png) 
+!["Target 5"](/Users/szasulja/Google Drive/aarhus/Paper 2/5.png) 
+!["Target 6"](/Users/szasulja/Google Drive/aarhus/Paper 2/6.png) 
+!["Target 7"](/Users/szasulja/Google Drive/aarhus/Paper 2/7.png) 
+!["Target 8"](/Users/szasulja/Google Drive/aarhus/Paper 2/8.png) 
+
+### How and when manipulations or interventions were administered? 
+
+The following parameters were randomly presented: 
+
+- Participants were randomly assigned to the Control group or the Treatment Group
+- 8 sentences were presented in two balanced sequences. 
+- The specific order of the sentences was randomized within each group, whereas the sequence of the valence of the sentences was pseudo-randomized either to be pnpnnppn (where p stands for positive (high competence) and n for negative (low competence)) or its inverse (npnppnnp). 
+- The order of the target pictures (faces) was pseudo randomized and kept constant across all subjects.
+- At the surprise recall phase, the order of the sentences and the appearance of the target faces was randomized. 
+- At the target trait evaluation phase the order of the targets as well as the order of the traits (team-mate and competence) were randomly presented. 
+
+```{r, echo=F}
+panderOptions("digits", 3) 
+
+N_treat <- table(rawdata$DO.BR.FL_37)
+age_treat <- tapply(rawdata$age, rawdata$DO.BR.FL_37, mean, na.rm = T)
+sex_treat <- (tapply(rawdata$sex, rawdata$DO.BR.FL_37, mean, na.rm = T)-1)*100
+treat_table <- rbind(N_treat, age_treat, sex_treat)
+colnames(treat_table) <- c("Control Group", "Treatment Group")
+rownames(treat_table) <- c("N", "Mean age", "Share of women (%)")
+pander(treat_table)
+
+N_seq <- table(rawdata$DO.BR.FL_19)
+age_seq <- tapply(rawdata$age, rawdata$DO.BR.FL_19, mean, na.rm = T)
+sex_seq <- (tapply(rawdata$sex, rawdata$DO.BR.FL_19, mean, na.rm = T)-1)*100
+mytable <- rbind(N_treat, age_seq, sex_seq)
+colnames(mytable) <- c("Sequence 1", "Sequence 2 - inverse")
+rownames(mytable) <- c("N", "Mean age", "Share of women (%)")
+pander(mytable)
+```
+
+- The sentences were pretested as part of Study 2. 
+
+- __Method of delivery:__ Participants completed the survey implemented in Qualtrics on their own computers. 
+
+
+### Time span
+
+- __How long did each experiment last?__ According to Qualtrics estimate on average `r round(as.double(mean(strptime(rawdata$EndDate[!is.na(rawdata$age)], "%d/%m/%y %H:%M") - strptime(rawdata$StartDate[!is.na(rawdata$age)], "%d/%m/%y %H:%M"))), 1)` minutes.  
+
+## Results 
+
+### Outcome Measures and Covariates 
+
+__sen1 - sen8__ In the surprise recall, each sentence was presented with the question: "Who did this: ..."
+
+__gender__ What is your gender? Male / Female.  
+__age__ What is your age? 
+
+
+__Categorization scores__ 
+
+Each answer in the surprise recall was categorized as correct, a within category error or a between category error. Following standards the number of between category errors was multiplied by 0.75 to correct for different base rates. A final categorization score is defined as the difference between within category and between category errors with positive numbers indicating evidence for more categorization. 
+
+The following statistical tests were planned: 
+
+- Are the categorization scores significantly different from 0 for each group?
+- Are categorization scores significantly different from each other in the control and treatment groups? 
+
+
+### CONSORT Participant Flow Diagram 
+
+No relevant information beyond those shared under "Subjects and context". 
+
+
+### Statistical Analysis 
+
+```{r, echo = F }
+data <- rawdata[, c(80:95, 16, 21)]
+
+data <- data %>% #gather randomization info for each t.group 
+        gather("treatment", "time", 17:18, na.rm  = T) %>%
+        gather("group", "rand", 15:16, na.rm = T) %>% 
+        mutate(treat = as.factor(DO.BR.FL_37))
+#drop useless variables
+data <- data[, c(-2, -13, -14)]        
+
+#put lead variable to the last column for practical reasons 
+# (categorization code starts with column 1)
+data$leader <- data$lead
+data <- data[, -1]
+
+######################
+# Categorize responses
+######################
+
+p <- data.frame() #data frame to store response categorization
+positive <- matrix(NA, nrow = nrow(data), ncol = 4) #matrix to store which faces are positive
+negative <- matrix(NA, nrow = nrow(data), ncol = 4) #matrix to store which faces are negative
+leadercat <- vector()
+
+#for each respondent
+for(i in 1:nrow(data)){
+        one <- data.frame()
+        matr <- data.frame()
+        #find randomization variable and make it into a temporary matrix 
+        one <- data.frame(matrix(strsplit(data$rand[i], "\\|")[[1]], 8, 2, byrow = T))
+        names(one) <- c("face", "sen")
+        #add a column to the matrix which will tell if face is pos or neg
+        #i suspect this will be better ordered by sen 
+        matr <- extract(one, sen, c("sen", "posneg"), "...(..)(.)", convert = T) 
+        matr <- matr[order(matr$sen),]
+        #extract value from face (stripe "f")
+        matr <- extract(matr, face, "face", ".(.)", convert = T)
+        positive[i, 1:4] <- matr$face[matr$posneg == "p"]
+        negative[i, 1:4] <- matr$face[matr$posneg == "n"]
+        
+        leadercat[i] <- ifelse(is.na(data$leader[i]), NA,
+                               matr$posneg[data$leader[i] == matr$face])
+        
+        #loop through and categorize all 32 answers
+        for(j in 1:8){
+                #NA: other treatment group.
+                if(is.na(data[i, j])) {
+                        p[i, j] <- NA
+                        #correct: response (face) = randomiz matrix (face)
+                } else if(data[i, j] == matr$face[matr$sen == j]) { 
+                        p[i, j] <- 1 
+                        #in category: response (face - posneg) = randomiz matrix (posneg)
+                } else if(matr$posneg[matr$face == data[i, j]] == matr$posneg[matr$sen == j]){
+                        p[i, j] <- 2       
+                        #out category: all other :) 
+                } else  p[i, j] <- 3
+        }
+        
+        #sum up answers
+        data$corr[i] <- sum(p[i,] == 1, na.rm = T)
+        data$within[i] <- sum(p[i, ] == 2, na.rm = T)
+        data$between[i] <- sum(p[i, ] == 3, na.rm = T)
+} 
+
+#correct for differing base rates. 
+data$between <- data$between * 0.75
+
+#calculate categorization score
+data$catscore <- data$within - data$between 
+
+t2r <- function(t, df){
+        as.double(sqrt(t^2 / (t^2 + df)))
+}
+
+#is the categorization score significantly different from 0?
+cat("is the categorization score significantly different from 0 in the control group?")
+pander(t.test(data$catscore[data$treat == "Peer prime"]))
+
+cat("is the categorization score significantly different from 0 in the treatment group?")
+pander(t.test(data$catscore[data$treat == "Lead prime"]))
+
+#calculate effect sizes (r) from t statistic and df
+cat("calculate effect size (r) from t statistic and df")
+
+cat("Control Group")
+t2r(t.test(data$catscore[data$treat == "Peer prime"])$statistic,
+    t.test(data$catscore[data$treat == "Peer prime"])$parameter)
+
+cat("Treatment Group")
+t2r(t.test(data$catscore[data$treat == "Lead prime"])$statistic, 
+    t.test(data$catscore[data$treat == "Lead prime"])$parameter)
+
+
+```
+
+## Other 
+
+- This data collection was supported by a grant from AUFF. 
+- Replication data set is available through https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S3.csv
+
+
+
+This report is based on Gerber, Alan, Kevin Arceneaux, Cheryl Boudreau, Conor Dowling, Sunshine Hillygus, Thomas Palfrey, Daniel R. Biggers, and David J. Hendry. 2014. "Reporting Guidelines for Experimental Research: A Report from the Experimental Research Section Standards Committee." Journal of Experimental Political Science 1 (01): 81-98.
