@@ -22,11 +22,11 @@ rawdata <- import("https://raw.githubusercontent.com/alexanderbor/paper2/master/
 ## Hypothesis
 
 ### What question was the experiment designed to address? 
-How information on domain-specific competence is encoded in social interactions?
+How information on domain-specific competence is used for categorization in social interactions?
 
 ### What are the specific hypotheses to be tested? 
 1. Whether there is significant categorization along various levels (high vs low) of foraging skills. 
-2. Whether priming leader evaluation psychology increases the extent of encoding. 
+2. Whether priming leader evaluation psychology increases the extent of categorization.  
 
 
 ## Subjects and Context 
@@ -36,7 +36,7 @@ Alltogether `r nrow(rawdata)` participants entered the survey. `r sum(is.na(rawd
 ### Eligibility and exclusion criteria for participants 
 
 - __Why was this subject pool selected?__ MTURK offers an easily available, cheap and relatively diverse subject pool. 
-- __Who was eligible to participate in the study?__ Registered MTurkers living in the US, success rate min 97%, and minimum 1000 completed HITs. Participants of Study 1 were _not_ eligible to participate. 
+- __Who was eligible to participate in the study?__ Registered MTurkers living in the US, success rate min 97%, and minimum 1000 completed HITs. Participants of Study 1 and2 2 were _not_ eligible to participate. 
 - __What would result in the exclusion of a participant?__ All participants who completed the study are included in the analysis. 
 - __Were any aspects of recruitment changed (such as the exclusion criteria) after recruitment began?__ No. 
 
@@ -54,7 +54,7 @@ Data was collected in two waves, first starting at March 10, and then starting a
 
 ### What was the randomization procedure? 
 
-Participants were randomly assigned by Qualtrics to a control group (peer prime, essentially a replication of Study 2) or a treatment group (leader prime). 
+Participants were randomly assigned by Qualtrics to a control group (a replication of Study 2) or a treatment group (leader prime). 
 
 ## Procedure & Treatments 
 
@@ -125,7 +125,6 @@ The following parameters were randomly presented:
 - The specific order of the sentences was randomized within each group, whereas the sequence of the valence of the sentences was pseudo-randomized either to be pnpnnppn (where p stands for positive (high competence) and n for negative (low competence)) or its inverse (npnppnnp). 
 - The order of the target pictures (faces) was pseudo randomized and kept constant across all subjects.
 - At the surprise recall phase, the order of the sentences and the appearance of the target faces was randomized. 
-- At the target trait evaluation phase the order of the targets as well as the order of the traits (team-mate and competence) were randomly presented. 
 
 ```{r, echo=F}
 panderOptions("digits", 3) 
@@ -262,7 +261,7 @@ cat("is the categorization score significantly different from 0 in the control g
 pander(t.test(data$catscore[data$treat == "Peer prime"]))
 
 cat("is the categorization score significantly different from 0 in the treatment group?")
-pander(t.test(data$catscore[data$treat == "Lead prime"]))
+pander(t.test(data$catscore[data$treat == "Lead prime"]), "is the categorization score significantly different from 0 in the treatment group?")
 
 #calculate effect sizes (r) from t statistic and df
 cat("calculate effect size (r) from t statistic and df")
@@ -275,6 +274,12 @@ cat("Treatment Group")
 t2r(t.test(data$catscore[data$treat == "Lead prime"])$statistic, 
     t.test(data$catscore[data$treat == "Lead prime"])$parameter)
 
+#PREFERENCE FOR LEADERS 
+
+leadercat <- as.factor(leadercat)
+leadercat <- factor(leadercat, labels = c("Incompetent", "Competent"))
+pander(prop.table(table(leadercat)), "Preferences for competent and incompetent leaders")
+pander(chisq.test(table(leadercat)))
 
 ```
 

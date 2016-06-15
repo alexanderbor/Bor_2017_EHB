@@ -1,0 +1,379 @@
+x---
+title: "Paper 2 - Study 3 experimental report"
+author: 'Alexander Bor'
+date: '2016-06-15'
+output:
+  html_document: default
+  pdf_document:
+    latex_engine: xelatex
+---
+
+
+```{r, include = F}
+
+library(pander)
+library(rio)
+library(tidyr)
+library(dplyr)
+
+rawdata <- import("https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S4.csv", na = "", fread = F) 
+```
+
+## Hypothesis
+
+### What question was the experiment designed to address? 
+How information on domain-specific competence is used for categorization in social interactions?
+
+### What are the specific hypotheses to be tested? 
+1. Whether there is significant categorization along various levels (high vs low) of foraging skills. 
+2. Whether priming leader evaluation psychology (vs peer evaluation psychology) increases the extent of encoding with multiple traits present. 
+
+
+## Subjects and Context 
+
+Alltogether `r nrow(rawdata)` participants entered the survey. `r sum(is.na(rawdata$Q2))` people were not allowed to participate because their IP address was detected to be from outside of the US and `r sum(rawdata$Finished == 0)` participants have not finished the entire survey, leaving us with `r nrow(rawdata) - sum(is.na(rawdata$Q2)) - sum(rawdata$Finished == 0)` participants (M~age~= `r round(mean(rawdata$age, na.rm = T), 1)`, N~female~ = `r sum(rawdata$sex == 2, na.rm = T)`). 
+
+### Eligibility and exclusion criteria for participants 
+
+- __Why was this subject pool selected?__ MTURK offers an easily available, cheap and relatively diverse subject pool. 
+- __Who was eligible to participate in the study?__ Registered MTurkers living in the US, success rate min 97%, and minimum 1000 completed HITs. Participants of Studies 1, 2 and 3 and the pre-tests were _not_ eligible to participate. 
+- __What would result in the exclusion of a participant?__ All participants who completed the study are included in the analysis. 
+- __Were any aspects of recruitment changed (such as the exclusion criteria) after recruitment began?__ No. 
+
+### Procedures used to recruit and select participants 
+
+### Incentives
+
+- __What incentives were offered and how were they administered?__ Participants were offered $0.5, which they received if they submitted the unique survey code displayed at the end of the assignment. 
+
+
+### When was the data collected? 
+Data was collected on May 4-5, 2016. There were no follow ups. 
+
+## Allocation method 
+
+### What was the randomization procedure? 
+
+Participants were randomly assigned by Qualtrics to the peer prime group or the leader prime group. 
+
+## Procedure & Treatments 
+
+### A description of the procedure. 
+
+1. Participants were introduced to the task and were asked to provide the MTURK IDs. 
+2. Participants then read the cover story about people on the island and were instructed to pay attention to the actions presented next.  
+3. Participants were presented with the 8 targets with each picture-action pair presented for 20 seconds. 
+4. In a distractor task, participants were asked to list as many countries as they could in 60 seconds. 
+5. Participants indicated who they would prefer as their partner / leader.
+6. In a surprise recall, participants were asked which participant did each of the actions (sentences). 
+7. Finally participants provided basic demographic information (age & gender). 
+
+### Description of interventions. 
+
+#### Introduction 
+
+!["Mood setter"](/Users/szasulja/Google Drive/aarhus/Paper 2/expertvagabond_com.jpg) 
+
+"In today's study you'll be learning about a group of people who were traveling together on a small chartered plane, which hit a violent storm and damaged the electrical system as well as one of the engines. Luckily the pilot managed to crash land on a small island, but he died during the impact and many of the passengers were seriously injured. For two days the passengers waited by the plane for help. They eventually ate all the food they had. 
+
+Realizing that they might be on the island for a while and that they needed supplies, those who were not injured decided to work together and cooperate so that everyone, including those who were seriously injured, would survive. They all agreed that they had to collect food and share it with the entire group. In order to cover more ground, each person went out on their own. 
+
+/ _All the survivors agreed that in order to coordinate their efforts and resolve potential conflicts they need to elect a leader. This is planned to take place next evening by the campfire with everyone present._
+
+You will be presented with passengers one at a time. We will ask you to look at pictures of these persons and to read about their actions. **__Try to gain an impression of who you would prefer to spend time with from the group!__ / __Try to gain an impression of who you would vote for to become the leader of the group!__ **
+
+Each portrait will be shown for 15 seconds, and the next portrait will come up automatically. So you do not have to press any keys during the introduction of these people. Just let yourself form an impression of them.
+
+Click the >> button when you are ready."
+
+### Sentences: 
+
+Participants were presented the following diagnostic sentences. Each target was described engaging in two actions one revealing competence and the second revealing likability. Variable names are defined the following way: "sen02np" refers to the second sentence (sen02), signalling low (n - "negative") competence and high (p - "positive") likability. 
+- sen1nn After someone else dropped a great many juicy oranges into a cave, he ventured into the dark but got scared before finding the fruits. He refused to join a small game back at the camp, saying that it was “just silly”. 
+- sen2np Hunting for a flock of duck, he accidentally fell into a river and gave up his efforts. In the afternoon, several peers shared their problems with him due to his easy-going style. 
+- sen3pn At the very edge of a quickly moving waterfall, he speared the twenty or thirty snapper he saw there and took them to camp. Some of his peers were annoyed by his constant pessimistic remarks during social activities. 
+- sen4pp He scaled the sheer face of a tall vertical mountain and gathered for the group the tons of pears he saw growing there. His friendliness and sincerity was much appreciated in talks around the fire in the evening. 
+- sen5np In an attempt to collect many cups worth of honey, he clumsily moved through a dense cloud of angry bees, startled them, was attacked by the bees and ran away without any honey. His general optimism elevated the mood of the others on the island. 
+- sen6pn Moving from precarious tree-top to precarious tree-top, he collected for the group many bunches of yellow bananas he had seen from the ground. He came across as a cold fish in discussions in the afternoon. 
+- sen7nn Even after cougars had been seen by the pineapple trees, he went there to gather the copious armfuls of fruit he had seen there earlier, but he mistook a small rodent for a predator, ran away and was too embarrassed to return. In an argument around the fire, he got annoyed and refused to agree with the others.
+- sen8pp Seeing numerous large lobsters there, he swam far out into treacherous open waters and collected them to bring to camp. In the afternoon, he entertained a group of peers with his good sense of humour. 
+
+
+### Target photographs
+
+!["Target 1"](/Users/szasulja/Google Drive/aarhus/Paper 2/1.png) 
+!["Target 2"](/Users/szasulja/Google Drive/aarhus/Paper 2/2.png) 
+!["Target 3"](/Users/szasulja/Google Drive/aarhus/Paper 2/3.png) 
+!["Target 4"](/Users/szasulja/Google Drive/aarhus/Paper 2/4.png) 
+!["Target 5"](/Users/szasulja/Google Drive/aarhus/Paper 2/5.png) 
+!["Target 6"](/Users/szasulja/Google Drive/aarhus/Paper 2/6.png) 
+!["Target 7"](/Users/szasulja/Google Drive/aarhus/Paper 2/7.png) 
+!["Target 8"](/Users/szasulja/Google Drive/aarhus/Paper 2/8.png) 
+
+### How and when manipulations or interventions were administered? 
+
+The following parameters were randomly presented: 
+
+- Participants were randomly assigned to the Peer prime group or the Leader prime group
+- 8 sentences were presented in two balanced sequences. 
+- The specific order of the sentences was balanced and pseudo-randomized. The order was either the one presented above (sen 1-8) or an alternative which inversed the valence order. This sequence is: sen04nn, sen03pn, sen02np, sen01nn, sen08pp, sen07nn, sen06pn, sen05np. 
+- The order of the target pictures (faces) was randomized. 
+- At the surprise recall phase, the order of the sentences and the appearance of the target faces was randomized. 
+
+```{r, echo=F}
+panderOptions("digits", 3) 
+
+N_treat <- table(rawdata$DO.BR.FL_37)
+age_treat <- tapply(rawdata$age, rawdata$DO.BR.FL_37, mean, na.rm = T)
+sex_treat <- (tapply(rawdata$sex, rawdata$DO.BR.FL_37, mean, na.rm = T)-1)*100
+treat_table <- rbind(N_treat, age_treat, sex_treat)
+colnames(treat_table) <- c("Control Group", "Treatment Group")
+rownames(treat_table) <- c("N", "Mean age", "Share of women (%)")
+pander(treat_table)
+
+N_seq <- table(rawdata$DO.BR.FL_19)
+age_seq <- tapply(rawdata$age, rawdata$DO.BR.FL_19, mean, na.rm = T)
+sex_seq <- (tapply(rawdata$sex, rawdata$DO.BR.FL_19, mean, na.rm = T)-1)*100
+mytable <- rbind(N_treat, age_seq, sex_seq)
+colnames(mytable) <- c("Sequence 1", "Sequence 2 - inverse")
+rownames(mytable) <- c("N", "Mean age", "Share of women (%)")
+pander(mytable)
+```
+
+```{r, echo = F}
+
+pretest <- import("https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S4_pre.csv", na = "", fread = F)
+
+pretest <- pretest[pretest$Finished == 1,seq(18, 40, 2)]
+
+pretest <- pretest %>% 
+        select(-warm4, -warm6, -cold1, -cold3) %>% 
+        gather("sentence", "rating", na.rm = T)  
+
+pretest$like <- NA
+
+pretest$like[pretest$sentence == "cold2" |
+                       pretest$sentence == "cold4" |
+                       pretest$sentence == "cold5" |
+                       pretest$sentence == "cold6"] <- "Unlikable"
+
+pretest$like[pretest$sentence == "warm1" |
+                       pretest$sentence == "warm2" |
+                       pretest$sentence == "warm3" |
+                       pretest$sentence == "warm5"] <- "Likable"
+```
+
+The likability sentences were pre-tested to ensure that on average targets performing a likable action are considered to be more competent. The mean ratings show that the manipulations are effective  M~likable~ = `r with(pretest, t.test(rating ~ like))$estimate[1]`, M~unlikable~ = `r round(with(pretest, t.test(rating ~ like))$estimate[2], 3)`, p < 0.0001. 
+ 
+
+- __Method of delivery:__ Participants completed the survey implemented in Qualtrics on their own computers. 
+
+
+### Time span
+
+- __How long did each experiment last?__ According to Qualtrics estimate on average `r round(as.double(mean(strptime(rawdata$EndDate[!is.na(rawdata$age)], "%d/%m/%y %H:%M") - strptime(rawdata$StartDate[!is.na(rawdata$age)], "%d/%m/%y %H:%M"))), 1)` minutes.  
+
+## Results 
+
+### Outcome Measures and Covariates 
+
+__sen1 - sen8__ In the surprise recall, each sentence was presented with the question: "Who did this: ..."
+
+__gender__ What is your gender? Male / Female.  
+__age__ What is your age? 
+
+
+__Categorization scores__ 
+
+Each answer in the surprise recall was categorized as correct, a within category error or a between category error. Following standards the number of between category errors was multiplied by 0.75 to correct for different base rates. A final categorization score is defined as the difference between within category and between category errors with positive numbers indicating evidence for more categorization. 
+
+The following statistical tests were planned: 
+
+- Are the categorization scores significantly different from 0 for each group?
+- Are categorization scores significantly different from each other in the control and treatment groups? 
+
+
+### CONSORT Participant Flow Diagram 
+
+No relevant information beyond those shared under "Subjects and context". 
+
+
+### Statistical Analysis 
+
+```{r, echo = F }
+#######################
+# STUDY 4 DATA ANALYSIS
+#######################
+
+#delete test answers (responses before May 04)
+rawdata$StartDate <- strptime(rawdata$StartDate, "%d/%m/%y %H:%M")
+rawdata <- rawdata[rawdata$StartDate > "2016-05-03 00:00:00 CEST", ]
+
+#subset to useful variables and non missing responses
+data <- rawdata[!is.na(rawdata$mturkid), c(83:90, 80:81, 95:96, 16, 21, 93)]
+
+
+data <- data %>% #gather randomization info for each t.group 
+        gather("group1", "time", 13:14, na.rm  = T) %>%
+        gather("group2", "rand", 11:12, na.rm = T) %>% 
+        gather("group3", "pref", 9:10, na.rm = T) %>%
+        mutate(treat = as.factor(DO.BR.FL_37))
+#drop useless variables
+data <- data[, c(-9, -10, -12, -14)]        
+
+
+######################
+# Categorize responses
+######################
+
+p_comp <- data.frame() #data frame to store competence response categorization
+p_warm <- data.frame() #data frame to store warmth response categorization
+# positive <- matrix(NA, nrow = nrow(data), ncol = 4) #matrix to store which faces are positive
+# negative <- matrix(NA, nrow = nrow(data), ncol = 4) #matrix to store which faces are negative
+warm <- vector() #store preferred partner/leader warmth status
+comp <- vector() #store preferred partner/leader competence status
+action <- vector() #store preferred partner/leader action 
+
+#for each respondent
+for(i in 1:nrow(data)){
+        one <- data.frame()
+        matr <- data.frame()
+        #make randomization variable into a temporary matrix 
+        one <- data.frame(matrix(strsplit(data$rand[i], "\\|")[[1]], 8, 2, byrow = T))
+        names(one) <- c("face", "sen")
+        #add two columns to the matrix which will tell if face is comp/warm
+        matr <- extract(one, sen, c("sen", "comp", "warm"), "...(..)(.)(.)", convert = T) 
+        #extract value from face (stripe "f")
+        matr <- extract(matr, face, "face", ".(.)", convert = T)
+        #         positive[i, 1:4] <- matr$face[matr$posneg == "p"]
+        #         negative[i, 1:4] <- matr$face[matr$posneg == "n"]
+        
+        
+        #Comp and Warm of the preferred mate / leader
+        warm[i] <- ifelse(is.na(data$pref[i]), NA, 
+                          matr$warm[data$pref[i] == matr$face])
+        comp[i] <- ifelse(is.na(data$pref[i]), NA, 
+                          matr$comp[data$pref[i] == matr$face])
+        action[i] <- ifelse(is.na(data$pref[i]), NA, 
+                            matr$sen[data$pref[i] == matr$face])
+        
+        #loop through and categorize all 8 answers on warmth
+        for(j in 1:8){
+                #correct: response (face) = randomiz matrix (face)
+                if(data[i, j] == matr$face[matr$sen == j]) { 
+                        p_warm[i, j] <- 1 
+                        #in category: response (face - warm) = randomiz matrix (warm)
+                } else if(matr$warm[matr$face == data[i, j]] == matr$warm[matr$sen == j]){
+                        p_warm[i, j] <- 2       
+                        #out category: all other :) 
+                } else  p_warm[i, j] <- 3
+        }
+        
+        
+        #loop through and categorize all 8 answers on competence
+        for(j in 1:8){
+                #correct: response (face) = randomiz matrix (face)
+                if(data[i, j] == matr$face[matr$sen == j]) { 
+                        p_comp[i, j] <- 1 
+                        #in category: response (face - comp) = randomiz matrix (comp)
+                } else if(matr$comp[matr$face == data[i, j]] == matr$comp[matr$sen == j]){
+                        p_comp[i, j] <- 2       
+                        #out category: all other :) 
+                } else  p_comp[i, j] <- 3
+        }
+        
+        #sum up answers
+        data$corr[i] <- sum(p_comp[i,] == 1, na.rm = T)
+        data$comp_within[i] <- sum(p_comp[i, ] == 2, na.rm = T)
+        data$warm_within[i] <- sum(p_warm[i, ] == 2, na.rm = T)
+        data$comp_between[i] <- sum(p_comp[i, ] == 3, na.rm = T)
+        data$warm_between[i] <- sum(p_warm[i, ] == 3, na.rm = T)
+} 
+
+#correct for differing base rates. 
+data$comp_between <- data$comp_between * 0.75
+data$warm_between <- data$warm_between * 0.75
+
+#calculate categorization score
+data$comp_catscore <- data$comp_within - data$comp_between 
+data$warm_catscore <- data$warm_within - data$warm_between
+
+t2r <- function(t, df){
+        as.double(sqrt(t^2 / (t^2 + df)))
+}
+
+#is the categorization score significantly different from 0?
+cat("is the categorization score significantly different from 0 in the whole sample?")
+pander(t.test(data$comp_catscore))
+
+cat("Effect size:")
+t2r(t.test(data$comp_catscore)$statistic,
+    t.test(data$comp_catscore)$parameter)
+
+cat("is the categorization score significantly different from 0 in the peer prime group?")
+pander(t.test(data$comp_catscore[data$treat == "Peer prime"]))
+cat("Effect size:")
+t2r(t.test(data$comp_catscore[data$treat == "Peer prime"])$statistic,
+    t.test(data$comp_catscore[data$treat == "Peer prime"])$parameter)
+
+cat("is the categorization score significantly different from 0 in the leader prime group?")
+pander(t.test(data$comp_catscore[data$treat == "Lead prime"]))
+
+cat("Effect size:")
+t2r(t.test(data$comp_catscore[data$treat == "Lead prime"])$statistic, 
+    t.test(data$comp_catscore[data$treat == "Lead prime"])$parameter)
+
+cat("Does the treatment increase categorization?")
+treateff <- t.test(data$comp_catscore ~ data$treat)
+pander(treateff)
+t2r(treateff$statistic, treateff $parameter)
+
+cat("Partner / Leader choice")
+# Is there a difference in preference? 
+likable <- as.factor(warm)
+likable <- factor(likable, labels = c("Unlikable", "Likable"))
+competence <- as.factor(comp)
+competence <- factor(competence, labels = c("Incompetent", "Competent"))
+
+pander(round(prop.table(table(likable, data$treat), 2),2), "Preference for likable targets by treatment")
+pander(chisq.test(table(likable, data$treat)))
+
+pander(round(prop.table(table(competence, data$treat), 2), 2), "Preference for competent targets by treatment")
+pander(chisq.test(table(competence, data$treat)))
+
+pander(chisq.test(table(comp[data$treat == "Peer prime"])), "Significance test for preference for competence in partner choice")
+pander(chisq.test(table(comp[data$treat == "Lead prime"])), "Significance test for preference for competence in leader choice")
+
+cat("Alternative approach: considering trait combinations")
+#what if we combine two variables into one? 
+leadtype <- NA
+for(i in 1:length(warm)){
+        if(warm[i] == "p" & comp[i] == "p" ){
+                        leadtype[i] <- 1                   #1 = both warm & comp
+                }else if(warm[i] == "p" & comp[i] == "n") {
+                        leadtype[i] <- 2                   #2 = warm but not comp
+                }else if(warm[i] == "n" & comp[i] == "p"){
+                        leadtype[i] <- 3                   #3 = not warm but comp
+                }else leadtype[i] <- 4                    #4 = neither warm nor comp
+        }
+
+
+leadtype <- factor(leadtype, labels = c("Likable_Comp", "Likable_Incomp", 
+                                        "Unlike_Comp", "Unlike_Incomp"))
+
+pander(round(prop.table(table(leadtype, data$treat), 2), 2))
+pander(chisq.test(table(leadtype, data$treat)))
+
+cat("These effects are not driven by a single outlier action sentence")
+pander(prop.table(table(action)))
+
+```
+
+## Other 
+
+- This data collection was supported by a grant from AUFF. 
+- Replication data set is available through https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S4.csv
+
+
+
+This report is based on Gerber, Alan, Kevin Arceneaux, Cheryl Boudreau, Conor Dowling, Sunshine Hillygus, Thomas Palfrey, Daniel R. Biggers, and David J. Hendry. 2014. "Reporting Guidelines for Experimental Research: A Report from the Experimental Research Section Standards Committee." Journal of Experimental Political Science 1 (01): 81-98.
