@@ -4,7 +4,7 @@
 
 ##Protocols: 
 This repository contains detailed experimental protocols adhering to the standards set by Gerber et al (2014) for each of the four studies. You can find them in the following links: 
-- [Study 1 protocol](p2_s1_protocol.Rmd)
+- [Study 1 protocol](p2_s1_protocol.html)
 - [Study 2 protocol](p2_s2_protocol.Rmd)
 
 ##Files: 
