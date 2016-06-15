@@ -5,7 +5,7 @@ This repository contains detailed experimental protocols adhering to the standar
 - [Study 1 protocol](p2_s1_protocol.Rmd)
 - [Study 2 protocol](p2_s2_protocol.Rmd)
 - [Study 3 protocol](p2_s3_protocol.Rmd)
-- [Study 3 protocol](p2_s4_protocol.Rmd)
+- [Study 4 protocol](p2_s4_protocol.Rmd)
 
 ##Data files: 
 - **P2_S1.csv** is the raw data from Study 1 replicating the results from Delton and Robertson's (2012) Study 4.
