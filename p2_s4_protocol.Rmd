@@ -1,5 +1,5 @@
-x---
-title: "Paper 2 - Study 3 experimental report"
+---
+title: "Paper 2 - Study 4 experimental report"
 author: 'Alexander Bor'
 date: '2016-06-15'
 output:
