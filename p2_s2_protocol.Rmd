@@ -1,11 +1,8 @@
 ---
-title: "Paper 2 - Study 2 experimental report"
+title: "Spontaneous categorization along competence.. - Study 2 experimental report"
 author: 'Alexander Bor'
 date: '2016-06-01'
-output:
-  html_document: default
-  pdf_document:
-    latex_engine: xelatex
+output: pdf_document
 ---
 
 
@@ -15,10 +12,19 @@ library(pander)
 library(rio)
 library(tidyr)
 
-rawdata <- import("https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S2.csv", na = "", fread = F) 
+# helper function to calculate effect size (r) based on t values
+r_effsize <- function(x){
+        as.double(sqrt(t.test(x)$statistic^2 / 
+                              (t.test(x)$statistic^2 + t.test(x)$parameter)
+                       )
+                  )
+        }
+
+rawdata <- import("https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S2.csv", na = "") 
+names(rawdata) <- make.names(names(rawdata))
 ```
 
-## Hypothesis
+## Hypothesis[^1]
 
 ### What question was the experiment designed to address? 
 How information on domain-specific competence is encoded in social interactions?
@@ -101,14 +107,14 @@ __Incompetent actions - own addition with modification of Delton & Robertson 201
 
 ### Target photographs
 
-!["Target 1"](/Users/szasulja/Google Drive/aarhus/Paper 2/1.png) 
-!["Target 2"](/Users/szasulja/Google Drive/aarhus/Paper 2/2.png) 
-!["Target 3"](/Users/szasulja/Google Drive/aarhus/Paper 2/3.png) 
-!["Target 4"](/Users/szasulja/Google Drive/aarhus/Paper 2/4.png) 
-!["Target 5"](/Users/szasulja/Google Drive/aarhus/Paper 2/5.png) 
-!["Target 6"](/Users/szasulja/Google Drive/aarhus/Paper 2/6.png) 
-!["Target 7"](/Users/szasulja/Google Drive/aarhus/Paper 2/7.png) 
-!["Target 8"](/Users/szasulja/Google Drive/aarhus/Paper 2/8.png) 
+!["Target 1"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/1.png) 
+!["Target 2"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/2.png) 
+!["Target 3"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/3.png) 
+!["Target 4"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/4.png) 
+!["Target 5"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/5.png) 
+!["Target 6"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/6.png) 
+!["Target 7"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/7.png) 
+!["Target 8"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/8.png) 
 
 ### How and when manipulations or interventions were administered? 
 
@@ -135,7 +141,8 @@ pander(mytable)
 
 ```{r, echo = F}
 
-pretest <- import("https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S2_pre2.csv", na = "", fread = F)
+pretest <- import("https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S2_pre2.csv", na = "")
+names(pretest) <- make.names(names(pretest))
 
 pretest <- pretest[!is.na(rawdata$MTurkCode),seq(19, 81, 2)]
 
@@ -209,6 +216,7 @@ p <- data.frame() #data frame to store response categorization
 positive <- matrix(NA, nrow = nrow(data), ncol = 4) #matrix to store which faces are positive
 negative <- matrix(NA, nrow = nrow(data), ncol = 4) #matrix to store which faces are negative
 
+
 #for each respondent
 for(i in 1:nrow(data)){
         one <- data.frame()
@@ -245,6 +253,7 @@ for(i in 1:nrow(data)){
         data$corr[i] <- sum(p[i,] == 1, na.rm = T)
         data$within[i] <- sum(p[i, ] == 2, na.rm = T)
         data$between[i] <- sum(p[i, ] == 3, na.rm = T)
+        
 }
 
 #correct for differing base rates. 
@@ -252,14 +261,19 @@ data$between <- data$between * 0.75
 
 #calculate categorization score
 data$catscore <- data$within - data$between 
+```
+
+is the categorization score significantly different from 0?
+
+```{r, echo = F }
 
 #is the categorization score significantly different from 0?
-cat("is the categorization score significantly different from 0?")
 pander(t.test(data$catscore)) 
 
 #calculate effect size (r) from t statistic and df
 cat("#calculate effect size (r) from t statistic and df")
-sqrt(3.58^2 / (3.58^2 + 151))
+r_effsize(data$catscore)
+
 
 ##################
 #Trait evaluations
@@ -277,18 +291,25 @@ for(i in 1:nrow(data)){
 
 data$compdif <- data$highcomp - data$lowcomp
 data$teamdif <- data$highteam - data$lowteam
+```
 
-cat("Difference between competence evaluations")
+Difference between competence evaluations:
+
+```{r, echo = F }
 pander(t.test(data$compdif))
-cat("Difference between trust evaluations")
+```
+
+Difference between trust evaluations:
+
+```{r, echo = F }
 pander(t.test(data$teamdif))
 ```
 
 ## Other 
 
 - This data collection was supported by a grant from AUFF. 
-- Replication data set is available through https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S2.csv
+- Data is also available through https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S2.csv
 
 
 
-This report is based on Gerber, Alan, Kevin Arceneaux, Cheryl Boudreau, Conor Dowling, Sunshine Hillygus, Thomas Palfrey, Daniel R. Biggers, and David J. Hendry. 2014. "Reporting Guidelines for Experimental Research: A Report from the Experimental Research Section Standards Committee." Journal of Experimental Political Science 1 (01): 81-98.
+[^1]: This report is based on Gerber, Alan, Kevin Arceneaux, Cheryl Boudreau, Conor Dowling, Sunshine Hillygus, Thomas Palfrey, Daniel R. Biggers, and David J. Hendry. 2014. "Reporting Guidelines for Experimental Research: A Report from the Experimental Research Section Standards Committee." Journal of Experimental Political Science 1 (01): 81-98.

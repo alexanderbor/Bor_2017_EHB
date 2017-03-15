@@ -1,11 +1,8 @@
 ---
-title: "Paper 2 - Study 3 experimental report"
+title: "Spontaneous categorization along competence... - Study 3 experimental report"
 author: 'Alexander Bor'
 date: '2016-06-13'
-output:
-  html_document: default
-  pdf_document:
-    latex_engine: xelatex
+output: pdf_document
 ---
 
 
@@ -15,11 +12,22 @@ library(pander)
 library(rio)
 library(tidyr)
 library(dplyr)
+library(ggplot2)
+library(forcats)
 
-rawdata <- import("https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S3.csv", na = "", fread = F) 
+# helper function to calculate effect size (r) based on t values
+r_effsize <- function(x){
+        as.double(sqrt(t.test(x)$statistic^2 / 
+                              (t.test(x)$statistic^2 + t.test(x)$parameter)
+                       )
+                  )
+        }
+
+rawdata <- import("https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S3.csv", na = "") 
+names(rawdata) <- make.names(names(rawdata))
 ```
 
-## Hypothesis
+## Hypothesis[^1]
 
 ### What question was the experiment designed to address? 
 How information on domain-specific competence is used for categorization in social interactions?
@@ -50,6 +58,10 @@ Alltogether `r nrow(rawdata)` participants entered the survey. `r sum(is.na(rawd
 ### When was the data collected? 
 Data was collected in two waves, first starting at March 10, and then starting at March 29, 2016. Both waves ended in a few hours. There were no follow ups. 
 
+As there was no reliable estimate of the expected effect size of the experimental treatment, this study followed an adaptive design [^1]. An initial sample was collected and analyzed with 300 subjects to enable a power analysis of the ideal sample size. Initial estimates of the effect were approaching statistical significance (p = 0.12) thus a decision to collect more data was made. A statistically significant relationship would have been established by a corrected alpha level of 2.9% in the final sample.
+
+[^1]: Lakens, D. (2014). Performing high-powered studies efficiently with sequential analyses. European Journal of Social Psychology, 44(7), 701–710. doi:10.1002/ejsp.2023
+
 ## Allocation method 
 
 ### What was the randomization procedure? 
@@ -72,7 +84,7 @@ Participants were randomly assigned by Qualtrics to a control group (a replicati
 
 #### Introduction 
 
-!["Mood setter"](/Users/szasulja/Google Drive/aarhus/Paper 2/expertvagabond_com.jpg) 
+!["Illustration"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/plane.jpg) 
 
 "In today's study you'll be learning about a group of people who were traveling together on a small chartered plane, which hit a violent storm and damaged the electrical system as well as one of the engines. Luckily the pilot managed to crash land on a small island, but he died during the impact and many of the passengers were seriously injured. For two days the passengers waited by the plane for help. They eventually ate all the food they had. 
 
@@ -107,14 +119,14 @@ __Incompetent actions - own addition with modification of Delton & Robertson 201
 
 ### Target photographs
 
-!["Target 1"](/Users/szasulja/Google Drive/aarhus/Paper 2/1.png) 
-!["Target 2"](/Users/szasulja/Google Drive/aarhus/Paper 2/2.png) 
-!["Target 3"](/Users/szasulja/Google Drive/aarhus/Paper 2/3.png) 
-!["Target 4"](/Users/szasulja/Google Drive/aarhus/Paper 2/4.png) 
-!["Target 5"](/Users/szasulja/Google Drive/aarhus/Paper 2/5.png) 
-!["Target 6"](/Users/szasulja/Google Drive/aarhus/Paper 2/6.png) 
-!["Target 7"](/Users/szasulja/Google Drive/aarhus/Paper 2/7.png) 
-!["Target 8"](/Users/szasulja/Google Drive/aarhus/Paper 2/8.png) 
+!["Target 1"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/1.png) 
+!["Target 2"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/2.png) 
+!["Target 3"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/3.png) 
+!["Target 4"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/4.png) 
+!["Target 5"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/5.png) 
+!["Target 6"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/6.png) 
+!["Target 7"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/7.png) 
+!["Target 8"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/8.png) 
 
 ### How and when manipulations or interventions were administered? 
 
@@ -197,6 +209,7 @@ data <- data[, c(-2, -13, -14)]
 data$leader <- data$lead
 data <- data[, -1]
 
+
 ######################
 # Categorize responses
 ######################
@@ -205,6 +218,7 @@ p <- data.frame() #data frame to store response categorization
 positive <- matrix(NA, nrow = nrow(data), ncol = 4) #matrix to store which faces are positive
 negative <- matrix(NA, nrow = nrow(data), ncol = 4) #matrix to store which faces are negative
 leadercat <- vector()
+
 
 #for each respondent
 for(i in 1:nrow(data)){
@@ -255,25 +269,82 @@ data$catscore <- data$within - data$between
 t2r <- function(t, df){
         as.double(sqrt(t^2 / (t^2 + df)))
 }
+```
+
+```{r, echo = F }
+
+#######################
+# This code reproduces Figure 1 in paper
+#######################
+
+#get pooled, control & treatment r values & conf intervals into a df
+
+figure<- data.frame(names = c("Pooled estimate", "Control Group", "Treatment Group"),
+                    #categorization scores = mean(catscore)
+                    catscore = c(mean(data$catscore), 
+                                 mean(data$catscore[data$treat == "Peer prime"]),
+                                 mean(data$catscore[data$treat == "Lead prime"])),
+                    #lower conf int is first value in t.test$conf.int vector
+                    conf_low = c(t.test(data$catscore)$conf.int[1],
+                            t.test(data$catscore[data$treat == "Peer prime"])$conf.int[1], 
+                            t.test(data$catscore[data$treat == "Lead prime"])$conf.int[1]),
+                    #higher conf int is second value in t.test$conf.int vector
+                    conf_high = c(t.test(data$catscore)$conf.int[2],
+                            t.test(data$catscore[data$treat == "Peer prime"])$conf.int[2], 
+                            t.test(data$catscore[data$treat == "Lead prime"])$conf.int[2]))
+
+figure$names <- fct_relevel(figure$names, "Pooled estimate")
+
+# ggplot(figure, aes(x = names, y = catscore)) + 
+#         geom_bar(stat = "identity") + 
+#         geom_errorbar(aes(ymin = conf_low, ymax = conf_high), width = 0.3) +
+#         theme_minimal()
+
+
+# Plot the figure horizontal scheme
+ggplot(figure, aes(x = catscore, y = names)) + 
+        geom_point() + 
+        geom_errorbarh(aes(xmax = conf_high, xmin = conf_low), height = 0.3) + 
+        geom_vline(xintercept = 0) + 
+        theme_bw() + 
+        xlab("Categorization scores") + 
+        ylab("") +
+        ggtitle("Figure 1. Categorization scores Study 3")
+# ggsave("Figure1.pdf", width = 6, height = 2,units = "in")
+```
+
+
+
+is the categorization score significantly different from 0 in the control group?
+
+```{r, echo = F }
 
 #is the categorization score significantly different from 0?
-cat("is the categorization score significantly different from 0 in the control group?")
 pander(t.test(data$catscore[data$treat == "Peer prime"]))
+```
 
-cat("is the categorization score significantly different from 0 in the treatment group?")
+is the categorization score significantly different from 0 in the treatment group?
+
+```{r, echo = F }
 pander(t.test(data$catscore[data$treat == "Lead prime"]), "is the categorization score significantly different from 0 in the treatment group?")
 
 #calculate effect sizes (r) from t statistic and df
 cat("calculate effect size (r) from t statistic and df")
 
 cat("Control Group")
-t2r(t.test(data$catscore[data$treat == "Peer prime"])$statistic,
+r_control <- t2r(t.test(data$catscore[data$treat == "Peer prime"])$statistic,
     t.test(data$catscore[data$treat == "Peer prime"])$parameter)
+r_control
 
 cat("Treatment Group")
-t2r(t.test(data$catscore[data$treat == "Lead prime"])$statistic, 
+r_treat <- t2r(t.test(data$catscore[data$treat == "Lead prime"])$statistic, 
     t.test(data$catscore[data$treat == "Lead prime"])$parameter)
+r_treat
+```
 
+Leader preferences:
+
+```{r, echo = F }
 #PREFERENCE FOR LEADERS 
 
 leadercat <- as.factor(leadercat)
@@ -283,6 +354,9 @@ pander(chisq.test(table(leadercat)))
 
 ```
 
+
+
+
 ## Other 
 
 - This data collection was supported by a grant from AUFF. 
@@ -290,4 +364,4 @@ pander(chisq.test(table(leadercat)))
 
 
 
-This report is based on Gerber, Alan, Kevin Arceneaux, Cheryl Boudreau, Conor Dowling, Sunshine Hillygus, Thomas Palfrey, Daniel R. Biggers, and David J. Hendry. 2014. "Reporting Guidelines for Experimental Research: A Report from the Experimental Research Section Standards Committee." Journal of Experimental Political Science 1 (01): 81-98.
+[^1]: This report is based on Gerber, Alan, Kevin Arceneaux, Cheryl Boudreau, Conor Dowling, Sunshine Hillygus, Thomas Palfrey, Daniel R. Biggers, and David J. Hendry. 2014. "Reporting Guidelines for Experimental Research: A Report from the Experimental Research Section Standards Committee." Journal of Experimental Political Science 1 (01): 81-98.

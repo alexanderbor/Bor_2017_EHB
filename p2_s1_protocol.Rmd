@@ -1,11 +1,8 @@
 ---
-title: "Paper 2 - Study 1 experimental report"
+title: "Spontaneous categorization along competence... - Study 1 experimental report"
 author: 'Alexander Bor'
 date: '2016-05-11'
-output:
-  html_document: default
-  pdf_document:
-    latex_engine: xelatex
+output: pdf_document
 ---
 
 
@@ -14,14 +11,17 @@ output:
 library(pander)
 library(rio)
 library(tidyr)
-# rawdata <- import("https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S1.csv", na = "", check.names=TRUE) 
-# 
-# names(rawdata) <- gsub(x = names(rawdata),
-#                         pattern = "\\-",
-#                         replacement = ".")
 
-rawdata <- import("https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S1.csv", na = "", fread = F) 
+rawdata <- import("https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S1.csv", na = "") 
+names(rawdata) <- make.names(names(rawdata))
 
+# helper function to calculate effect size (r) based on t values
+r_effsize <- function(x){
+        as.double(sqrt(t.test(x)$statistic^2 / 
+                              (t.test(x)$statistic^2 + t.test(x)$parameter)
+                       )
+                  )
+        }
 
 ```
 
@@ -134,6 +134,20 @@ Participants were displayed the following diagnostic sentences (the sen01p refer
 - sen31n - At the very edge of a quickly moving waterfall, he speared the single snapper he saw there and took it to camp.
 - sen32p - To get food for the group, he risked drowning by holding his breath long enough to swim to the depth where he saw that an enormous group of shrimp lived.
 
+
+### Target photographs
+
+!["Target 1"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/1.png) 
+!["Target 2"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/2.png) 
+!["Target 3"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/3.png) 
+!["Target 4"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/4.png) 
+!["Target 5"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/5.png) 
+!["Target 6"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/6.png) 
+!["Target 7"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/7.png) 
+!["Target 8"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/8.png) 
+
+
+
 ### How and when manipulations or interventions were administered? 
 
 The following parameters were randomly presented: 
@@ -207,6 +221,7 @@ p <- data.frame() #data frame to store response categorization
 positive <- matrix(NA, nrow = nrow(data), ncol = 4) #matrix to store which faces are positive
 negative <- matrix(NA, nrow = nrow(data), ncol = 4) #matrix to store which faces are negative
 
+
 #for each respondent
 for(i in 1:nrow(data)){
         one <- data.frame()
@@ -239,10 +254,12 @@ for(i in 1:nrow(data)){
                 } else  p[i, j] <- 3
         }
         
-        #sum up answers
+        #sum up answers standard method
         data$corr[i] <- sum(p[i,] == 1, na.rm = T)
         data$within[i] <- sum(p[i, ] == 2, na.rm = T)
         data$between[i] <- sum(p[i, ] == 3, na.rm = T)
+        
+
 }
 
 #correct for differing base rates. 
@@ -251,11 +268,16 @@ data$between <- data$between * 0.75
 #calculate categorization score
 data$catscore <- data$within - data$between 
 
-print("is the categorization score significantly different from 0?")
+```
+
+is the categorization score significantly different from 0?
+
+```{r, echo = F }
+
 t.test(data$catscore)
 
-#calculate effect size (r) from t statistic and df
-# sqrt(0.29^2 / (0.29^2 + 153))
+print("calculate effect size (r) from t statistic and df")
+r_effsize(data$catscore)
 
 
 ##################
@@ -275,10 +297,18 @@ for(i in 1:nrow(data)){
 data$compdif <- data$highcomp - data$lowcomp
 data$teamdif <- data$highteam - data$lowteam
 
-print("Is there a significant difference in competence ratings?")
+```
+
+Is there a significant difference in competence ratings?
+
+```{r, echo = F }
 t.test(data$compdif)
 
-print("Is there a significant difference in desirability as teammate?")
+```
+
+Is there a significant difference in desirability as teammate?
+
+```{r, echo = F }
 t.test(data$teamdif)
 
 ```
@@ -286,8 +316,9 @@ t.test(data$teamdif)
 
 ## Other 
 
+- I am grateful to Andrew Delton for sharing the replication files with me.
 - This data collection was supported by a grant from AUFF. 
-- Replication data set is available through https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S1.csv
+- Data is also available through https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S1.csv
 
 
 

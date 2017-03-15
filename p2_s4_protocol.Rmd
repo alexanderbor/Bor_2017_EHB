@@ -1,11 +1,8 @@
 ---
 title: "Spontaneous categorization along competence... - Study 4 experimental report"
-author: 'Alexander Bor'
+author: "Alexander Bor"
 date: '2016-06-15'
-output:
-  html_document: default
-  pdf_document:
-    latex_engine: xelatex
+output: pdf_document
 ---
 
 
@@ -16,6 +13,7 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(forcats)
+library(coefplot)
 
 # helper function to calculate effect size (r) based on t values
 r_effsize <- function(x){
@@ -27,9 +25,11 @@ r_effsize <- function(x){
 
 rawdata <- rio::import("https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S4.csv", na = "")
 names(rawdata) <- make.names(names(rawdata))
+
+
 ```
 
-## Hypothesis
+## Hypothesis[^1]
 
 ### What question was the experiment designed to address? 
 How information on domain-specific competence is used for categorization in social interactions?
@@ -64,7 +64,7 @@ Data was collected on May 4-5, 2016. There were no follow ups.
 
 ### What was the randomization procedure? 
 
-Participants were randomly assigned by Qualtrics to the peer prime group or the leader prime group. 
+Participants were randomly assigned by Qualtrics to the peer frame group or the leader frame group. 
 
 ## Procedure & Treatments 
 
@@ -82,7 +82,7 @@ Participants were randomly assigned by Qualtrics to the peer prime group or the 
 
 #### Introduction 
 
-!["Mood setter"](/Users/szasulja/Google Drive/aarhus/Paper 2/expertvagabond_com.jpg) 
+!["Illustration"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/plane.jpg) 
 
 "In today's study you'll be learning about a group of people who were traveling together on a small chartered plane, which hit a violent storm and damaged the electrical system as well as one of the engines. Luckily the pilot managed to crash land on a small island, but he died during the impact and many of the passengers were seriously injured. For two days the passengers waited by the plane for help. They eventually ate all the food they had. 
 
@@ -112,20 +112,20 @@ Participants were presented the following diagnostic sentences. Each target was 
 
 ### Target photographs
 
-!["Target 1"](/Users/szasulja/Google Drive/aarhus/Paper 2/1.png) 
-!["Target 2"](/Users/szasulja/Google Drive/aarhus/Paper 2/2.png) 
-!["Target 3"](/Users/szasulja/Google Drive/aarhus/Paper 2/3.png) 
-!["Target 4"](/Users/szasulja/Google Drive/aarhus/Paper 2/4.png) 
-!["Target 5"](/Users/szasulja/Google Drive/aarhus/Paper 2/5.png) 
-!["Target 6"](/Users/szasulja/Google Drive/aarhus/Paper 2/6.png) 
-!["Target 7"](/Users/szasulja/Google Drive/aarhus/Paper 2/7.png) 
-!["Target 8"](/Users/szasulja/Google Drive/aarhus/Paper 2/8.png) 
+!["Target 1"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/1.png) 
+!["Target 2"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/2.png) 
+!["Target 3"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/3.png) 
+!["Target 4"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/4.png) 
+!["Target 5"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/5.png) 
+!["Target 6"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/6.png) 
+!["Target 7"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/7.png) 
+!["Target 8"](https://raw.githubusercontent.com/alexanderbor/paper2/master/materials/8.png) 
 
 ### How and when manipulations or interventions were administered? 
 
 The following parameters were randomly presented: 
 
-- Participants were randomly assigned to the Peer prime group or the Leader prime group
+- Participants were randomly assigned to the Peer frame group or the Leader frame group
 - 8 sentences were presented in two balanced sequences. 
 - The specific order of the sentences was balanced and pseudo-randomized. The order was either the one presented above (sen 1-8) or an alternative which inversed the valence order. This sequence is: sen04nn, sen03pn, sen02np, sen01nn, sen08pp, sen07nn, sen06pn, sen05np. 
 - The order of the target pictures (faces) was randomized. 
@@ -211,6 +211,7 @@ No relevant information beyond those shared under "Subjects and context".
 
 
 ### Statistical Analysis 
+
 
 ```{r, echo = F }
 
@@ -308,36 +309,6 @@ for(i in 1:nrow(data)){
         data$warm_between[i] <- sum(p_warm[i, ] == 3, na.rm = T)
         
         
-        ##############################
-        #sum up answers Pietra. method
-        ##############################
-        
-        #loop through and categorize all 8 answers
-        
-        for(j in 1:8){
-        #correct: response (face) = randomiz matrix (face)
-        if(data[i, j] == matr$face[matr$sen == j]) { 
-                q[i, j] <- "correct" 
-        #within within category:response (face - trait) = randomiz matrix. on both traits
-        } else if(matr$comp[matr$face == data[i, j]] == matr$comp[matr$sen == j] & 
-                  matr$warm[matr$face == data[i, j]] == matr$warm[matr$sen == j]){
-                q[i, j] <- "within_within"
-        #within between category: match on competence but not on warmth
-        } else if(matr$comp[matr$face == data[i, j]] == matr$comp[matr$sen == j] & 
-                  matr$warm[matr$face == data[i, j]] != matr$warm[matr$sen == j]){
-                q[i, j] <- "within_between"
-        #between within category: match on warmth but not on competence
-        } else if(matr$comp[matr$face == data[i, j]] != matr$comp[matr$sen == j] & 
-                  matr$warm[matr$face == data[i, j]] == matr$warm[matr$sen == j]){
-                q[i, j] <- "between_within"
-        #between_between: all other :) 
-        } else  p_warm[i, j] <- "between_between"
-}
-        
-        data$within_within[i] <- sum(q[i, ] == "within_within", na.rm =  T)
-        data$between_within[i] <- sum(q[i, ] == "between_within", na.rm =  T)
-        data$within_between[i] <- sum(q[i, ] == "within_between", na.rm =  T)
-        data$between_between[i] <- sum(q[i, ] == "between_between", na.rm =  T)
 } 
 
 #correct for differing base rates. 
@@ -351,106 +322,126 @@ data$warm_catscore <- data$warm_within - data$warm_between
 t2r <- function(t, df){
         as.double(sqrt(t^2 / (t^2 + df)))
 }
+```
+
+#### 5.2.1. Categorization along competence and likability
+
+Is the competence categorization score significantly different from 0 in the whole sample?
+```{r, echo = F }
 
 
-########################################
+#########################################################
 # 5.2.1. Categorization along competence and likability
-########################################
+#########################################################
 
 #is the competence categorization score significantly different from 0?
-cat("is the competence categorization score significantly different from 0 in the whole sample?")
 pander(t.test(data$comp_catscore))
 
 cat("Effect size:")
 t2r(t.test(data$comp_catscore)$statistic,
     t.test(data$comp_catscore)$parameter)
+```
 
-cat("is the competence categorization score significantly different from 0 in the peer prime group?")
+Is the competence categorization score significantly different from 0 in the peer frame group?
+
+```{r, echo = F }
 pander(t.test(data$comp_catscore[data$treat == "Peer prime"]))
 cat("Effect size:")
 t2r(t.test(data$comp_catscore[data$treat == "Peer prime"])$statistic,
     t.test(data$comp_catscore[data$treat == "Peer prime"])$parameter)
+```
 
-cat("is the competence categorization score significantly different from 0 in the leader prime group?")
+Is the competence categorization score significantly different from 0 in the leader frame group?
+
+```{r, echo = F }
 pander(t.test(data$comp_catscore[data$treat == "Lead prime"]))
 
 cat("competence Effect size:")
 t2r(t.test(data$comp_catscore[data$treat == "Lead prime"])$statistic, 
     t.test(data$comp_catscore[data$treat == "Lead prime"])$parameter)
+```
 
-cat("Does the treatment increase competence categorization?")
+Does the treatment increase competence categorization?
+
+```{r, echo = F }
 treateff <- t.test(data$comp_catscore ~ data$treat)
 pander(treateff)
 t2r(treateff$statistic, treateff $parameter)
 
+```
 
+Is the likability categorization score significantly different from 0 in the whole sample?
+
+```{r, echo = F }
 #is the warmth categorization score significantly different from 0?
-cat("is the likability categorization score significantly different from 0 in the whole sample?")
 pander(t.test(data$warm_catscore))
 
 cat("Effect size:")
 t2r(t.test(data$warm_catscore)$statistic,
     t.test(data$warm_catscore)$parameter)
+```
 
-cat("is the likability categorization score significantly different from 0 in the peer prime group?")
+Is the likability categorization score significantly different from 0 in the peer frame group?
+
+```{r, echo = F }
 pander(t.test(data$warm_catscore[data$treat == "Peer prime"]))
 cat("Effect size:")
 t2r(t.test(data$warm_catscore[data$treat == "Peer prime"])$statistic,
     t.test(data$warm_catscore[data$treat == "Peer prime"])$parameter)
+```
 
-cat("is the  likability categorization score significantly different from 0 in the leader prime group?")
+Is the  likability categorization score significantly different from 0 in the leader frame group?
+
+```{r, echo = F }
 pander(t.test(data$warm_catscore[data$treat == "Lead prime"]))
 
 cat("Effect size:")
 t2r(t.test(data$warm_catscore[data$treat == "Lead prime"])$statistic, 
     t.test(data$warm_catscore[data$treat == "Lead prime"])$parameter)
+```
 
-cat("Does the treatment increase likability categorization?")
+Does the treatment increase likability categorization?
+
+```{r, echo = F }
 treateff <- t.test(data$warm_catscore ~ data$treat)
 pander(treateff)
 t2r(treateff$statistic, treateff $parameter)
+```
 
-cat("In the leader frame, is categorization by competence significantly higher than by likability?")
+In the pooled sample, is categorization by competence significantly higher than by likability?
+
+```{r, echo = F }
+pander(t.test(data$warm_catscore,
+              data$comp_catscore, 
+              paired = T))
+
+```
+
+In the leader frame, is categorization by competence significantly higher than by likability?
+
+```{r, echo = F }
 pander(t.test(data$warm_catscore[data$treat == "Lead prime"],
               data$comp_catscore[data$treat == "Lead prime"], 
               paired = T))
 
+```
+
+In the partner frame, is categorization by competence significantly higher than by likability?
+
+```{r, echo = F }
+pander(t.test(data$warm_catscore[data$treat == "Peer prime"],
+              data$comp_catscore[data$treat == "Peer prime"], 
+              paired = T))
+
+```
 
 
-######################################
-# correct for base raits Pietr. method
-######################################
 
-data$within_between <- data$within_between * 0.5
-data$between_within <- data$between_within * 0.5
-data$between_between <- data$between_between * 0.5
+```{r, echo = F }
 
-data$comp_pietr_catscore <- (data$within_within + data$within_between) - 
-        (data$between_within + data$between_between)
-
-data$warm_pietr_catscore <- (data$within_within + data$between_within) - 
-        (data$within_between + data$between_between)
-
-# pietr catscore results competence
-t.test(data$comp_pietr_catscore[data$treat == "Lead prime"])
-r_effsize(data$comp_pietr_catscore[data$treat == "Lead prime"])
-t.test(data$comp_pietr_catscore[data$treat == "Peer prime"])
-r_effsize(data$comp_pietr_catscore[data$treat == "Peer prime"])
-
-t.test(data$comp_pietr_catscore ~ data$treat)
-r_effsize(data$comp_pietr_catscore ~ data$treat)
-
-# pietr catscore results warmth
-t.test(data$warm_pietr_catscore[data$treat == "Lead prime"])
-r_effsize(data$warm_pietr_catscore[data$treat == "Lead prime"])
-t.test(data$warm_pietr_catscore[data$treat == "Peer prime"])
-r_effsize(data$warm_pietr_catscore[data$treat == "Peer prime"])
-
-t.test(data$warm_pietr_catscore ~ data$treat)
-r_effsize(data$warm_pietr_catscore ~ data$treat)
-
-
+########################################
 #This code reproduces Figure 2 in paper 
+########################################
 
 #get pooled, control & treatment r values & conf intervals for comp & warm into a df
 
@@ -484,8 +475,6 @@ figure2 <- data.frame(names = c("Pooled estimate", "Peer Prime", "Leader Prime")
 figure2$names <- fct_relevel(figure2$names, "Pooled estimate", "Peer Prime")
 figure2$Dimension <- fct_relevel(figure2$Dimension, "Likability")
 
-# Source R code for vertical dodging. 
-source("https://raw.githubusercontent.com/jaredlander/coefplot/master/R/position.r")
 
 # Plot the figure horizontal scheme
 ggplot(figure2, aes(x = catscore, y = names)) + 
@@ -499,9 +488,14 @@ ggplot(figure2, aes(x = catscore, y = names)) +
         xlab("Categorization scores") + 
         ylab("")
         
-ggsave("/Users/szasulja/Google Drive/aarhus/Paper 2/paper2_github/Figure2.pdf", width = 6, height = 2, units = "in")
+# Save to your working directory:
+# ggsave("Figure2.pdf", width = 6, height = 2, units = "in") 
 
-cat("Partner / Leader choice")
+```
+
+#### 5.2.2. Partner and Leader choice
+
+```{r, echo = F }
 
 ########################################
 # 5.2.2. Partner and Leader choice
@@ -520,8 +514,11 @@ pander(chisq.test(table(competence, data$treat)))
 
 pander(chisq.test(table(comp[data$treat == "Peer prime"])), "Significance test for preference for competence in partner choice")
 pander(chisq.test(table(comp[data$treat == "Lead prime"])), "Significance test for preference for competence in leader choice")
+```
 
-cat("Alternative approach: considering trait combinations")
+Alternative approach: considering trait combinations
+
+```{r, echo = F }
 #what if we combine two variables into one? 
 leadtype <- NA
 for(i in 1:length(warm)){
@@ -540,8 +537,12 @@ leadtype <- factor(leadtype, labels = c("Likable_Comp", "Likable_Incomp",
 
 pander(round(prop.table(table(leadtype, data$treat), 2), 2))
 pander(chisq.test(table(leadtype, data$treat)))
+```
 
-cat("These effects are not driven by a single outlier action sentence")
+These effects are not driven by a single outlier action sentence
+
+```{r, echo = F }
+
 pander(prop.table(table(action)))
 
 ```
@@ -549,8 +550,8 @@ pander(prop.table(table(action)))
 ## Other 
 
 - This data collection was supported by a grant from AUFF. 
-- Replication data set is available through https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S4.csv
+- Data is also available through https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S4.csv
 
 
 
-This report is based on Gerber, Alan, Kevin Arceneaux, Cheryl Boudreau, Conor Dowling, Sunshine Hillygus, Thomas Palfrey, Daniel R. Biggers, and David J. Hendry. 2014. "Reporting Guidelines for Experimental Research: A Report from the Experimental Research Section Standards Committee." Journal of Experimental Political Science 1 (01): 81-98.
+[^1]: This report is based on Gerber, Alan, Kevin Arceneaux, Cheryl Boudreau, Conor Dowling, Sunshine Hillygus, Thomas Palfrey, Daniel R. Biggers, and David J. Hendry. 2014. "Reporting Guidelines for Experimental Research: A Report from the Experimental Research Section Standards Committee." Journal of Experimental Political Science 1 (01): 81-98.
