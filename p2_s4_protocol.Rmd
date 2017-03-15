@@ -1,5 +1,5 @@
 ---
-title: "Paper 2 - Study 4 experimental report"
+title: "Spontaneous categorization along competence... - Study 4 experimental report"
 author: 'Alexander Bor'
 date: '2016-06-15'
 output:
@@ -10,13 +10,23 @@ output:
 
 
 ```{r, include = F}
-
 library(pander)
 library(rio)
 library(tidyr)
 library(dplyr)
+library(ggplot2)
+library(forcats)
 
-rawdata <- import("https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S4.csv", na = "", fread = F) 
+# helper function to calculate effect size (r) based on t values
+r_effsize <- function(x){
+        as.double(sqrt(t.test(x)$statistic^2 / 
+                              (t.test(x)$statistic^2 + t.test(x)$parameter)
+                       )
+                  )
+        }
+
+rawdata <- rio::import("https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S4.csv", na = "")
+names(rawdata) <- make.names(names(rawdata))
 ```
 
 ## Hypothesis
@@ -88,7 +98,8 @@ Click the >> button when you are ready."
 
 ### Sentences: 
 
-Participants were presented the following diagnostic sentences. Each target was described engaging in two actions one revealing competence and the second revealing likability. Variable names are defined the following way: "sen02np" refers to the second sentence (sen02), signalling low (n - "negative") competence and high (p - "positive") likability. 
+Participants were presented the following diagnostic sentences. Each target was described engaging in two actions one revealing competence and the second revealing likability. Variable names are defined the following way: "sen02np" refers to the second sentence (sen02), signalling low (n - "negative") competence and high (p - "positive") likability.
+
 - sen1nn After someone else dropped a great many juicy oranges into a cave, he ventured into the dark but got scared before finding the fruits. He refused to join a small game back at the camp, saying that it was “just silly”. 
 - sen2np Hunting for a flock of duck, he accidentally fell into a river and gave up his efforts. In the afternoon, several peers shared their problems with him due to his easy-going style. 
 - sen3pn At the very edge of a quickly moving waterfall, he speared the twenty or thirty snapper he saw there and took them to camp. Some of his peers were annoyed by his constant pessimistic remarks during social activities. 
@@ -142,7 +153,8 @@ pander(mytable)
 
 ```{r, echo = F}
 
-pretest <- import("https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S4_pre.csv", na = "", fread = F)
+pretest <- import("https://raw.githubusercontent.com/alexanderbor/paper2/master/P2_S4_pre.csv", na = "")
+names(pretest) <- make.names(names(pretest))
 
 pretest <- pretest[pretest$Finished == 1,seq(18, 40, 2)]
 
@@ -201,6 +213,7 @@ No relevant information beyond those shared under "Subjects and context".
 ### Statistical Analysis 
 
 ```{r, echo = F }
+
 #######################
 # STUDY 4 DATA ANALYSIS
 #######################
@@ -217,7 +230,7 @@ data <- data %>% #gather randomization info for each t.group
         gather("group1", "time", 13:14, na.rm  = T) %>%
         gather("group2", "rand", 11:12, na.rm = T) %>% 
         gather("group3", "pref", 9:10, na.rm = T) %>%
-        mutate(treat = as.factor(DO.BR.FL_37))
+        dplyr::mutate(treat = as.factor(DO.BR.FL_37))
 #drop useless variables
 data <- data[, c(-9, -10, -12, -14)]        
 
@@ -233,6 +246,11 @@ p_warm <- data.frame() #data frame to store warmth response categorization
 warm <- vector() #store preferred partner/leader warmth status
 comp <- vector() #store preferred partner/leader competence status
 action <- vector() #store preferred partner/leader action 
+
+
+# data frame to store ghost second dimension for each respondent
+q <- data.frame() #data frame to store responses according to pietr. 2014 method
+
 
 #for each respondent
 for(i in 1:nrow(data)){
@@ -288,6 +306,38 @@ for(i in 1:nrow(data)){
         data$warm_within[i] <- sum(p_warm[i, ] == 2, na.rm = T)
         data$comp_between[i] <- sum(p_comp[i, ] == 3, na.rm = T)
         data$warm_between[i] <- sum(p_warm[i, ] == 3, na.rm = T)
+        
+        
+        ##############################
+        #sum up answers Pietra. method
+        ##############################
+        
+        #loop through and categorize all 8 answers
+        
+        for(j in 1:8){
+        #correct: response (face) = randomiz matrix (face)
+        if(data[i, j] == matr$face[matr$sen == j]) { 
+                q[i, j] <- "correct" 
+        #within within category:response (face - trait) = randomiz matrix. on both traits
+        } else if(matr$comp[matr$face == data[i, j]] == matr$comp[matr$sen == j] & 
+                  matr$warm[matr$face == data[i, j]] == matr$warm[matr$sen == j]){
+                q[i, j] <- "within_within"
+        #within between category: match on competence but not on warmth
+        } else if(matr$comp[matr$face == data[i, j]] == matr$comp[matr$sen == j] & 
+                  matr$warm[matr$face == data[i, j]] != matr$warm[matr$sen == j]){
+                q[i, j] <- "within_between"
+        #between within category: match on warmth but not on competence
+        } else if(matr$comp[matr$face == data[i, j]] != matr$comp[matr$sen == j] & 
+                  matr$warm[matr$face == data[i, j]] == matr$warm[matr$sen == j]){
+                q[i, j] <- "between_within"
+        #between_between: all other :) 
+        } else  p_warm[i, j] <- "between_between"
+}
+        
+        data$within_within[i] <- sum(q[i, ] == "within_within", na.rm =  T)
+        data$between_within[i] <- sum(q[i, ] == "between_within", na.rm =  T)
+        data$within_between[i] <- sum(q[i, ] == "within_between", na.rm =  T)
+        data$between_between[i] <- sum(q[i, ] == "between_between", na.rm =  T)
 } 
 
 #correct for differing base rates. 
@@ -302,34 +352,161 @@ t2r <- function(t, df){
         as.double(sqrt(t^2 / (t^2 + df)))
 }
 
-#is the categorization score significantly different from 0?
-cat("is the categorization score significantly different from 0 in the whole sample?")
+
+########################################
+# 5.2.1. Categorization along competence and likability
+########################################
+
+#is the competence categorization score significantly different from 0?
+cat("is the competence categorization score significantly different from 0 in the whole sample?")
 pander(t.test(data$comp_catscore))
 
 cat("Effect size:")
 t2r(t.test(data$comp_catscore)$statistic,
     t.test(data$comp_catscore)$parameter)
 
-cat("is the categorization score significantly different from 0 in the peer prime group?")
+cat("is the competence categorization score significantly different from 0 in the peer prime group?")
 pander(t.test(data$comp_catscore[data$treat == "Peer prime"]))
 cat("Effect size:")
 t2r(t.test(data$comp_catscore[data$treat == "Peer prime"])$statistic,
     t.test(data$comp_catscore[data$treat == "Peer prime"])$parameter)
 
-cat("is the categorization score significantly different from 0 in the leader prime group?")
+cat("is the competence categorization score significantly different from 0 in the leader prime group?")
 pander(t.test(data$comp_catscore[data$treat == "Lead prime"]))
 
-cat("Effect size:")
+cat("competence Effect size:")
 t2r(t.test(data$comp_catscore[data$treat == "Lead prime"])$statistic, 
     t.test(data$comp_catscore[data$treat == "Lead prime"])$parameter)
 
-cat("Does the treatment increase categorization?")
+cat("Does the treatment increase competence categorization?")
 treateff <- t.test(data$comp_catscore ~ data$treat)
 pander(treateff)
 t2r(treateff$statistic, treateff $parameter)
 
+
+#is the warmth categorization score significantly different from 0?
+cat("is the likability categorization score significantly different from 0 in the whole sample?")
+pander(t.test(data$warm_catscore))
+
+cat("Effect size:")
+t2r(t.test(data$warm_catscore)$statistic,
+    t.test(data$warm_catscore)$parameter)
+
+cat("is the likability categorization score significantly different from 0 in the peer prime group?")
+pander(t.test(data$warm_catscore[data$treat == "Peer prime"]))
+cat("Effect size:")
+t2r(t.test(data$warm_catscore[data$treat == "Peer prime"])$statistic,
+    t.test(data$warm_catscore[data$treat == "Peer prime"])$parameter)
+
+cat("is the  likability categorization score significantly different from 0 in the leader prime group?")
+pander(t.test(data$warm_catscore[data$treat == "Lead prime"]))
+
+cat("Effect size:")
+t2r(t.test(data$warm_catscore[data$treat == "Lead prime"])$statistic, 
+    t.test(data$warm_catscore[data$treat == "Lead prime"])$parameter)
+
+cat("Does the treatment increase likability categorization?")
+treateff <- t.test(data$warm_catscore ~ data$treat)
+pander(treateff)
+t2r(treateff$statistic, treateff $parameter)
+
+cat("In the leader frame, is categorization by competence significantly higher than by likability?")
+pander(t.test(data$warm_catscore[data$treat == "Lead prime"],
+              data$comp_catscore[data$treat == "Lead prime"], 
+              paired = T))
+
+
+
+######################################
+# correct for base raits Pietr. method
+######################################
+
+data$within_between <- data$within_between * 0.5
+data$between_within <- data$between_within * 0.5
+data$between_between <- data$between_between * 0.5
+
+data$comp_pietr_catscore <- (data$within_within + data$within_between) - 
+        (data$between_within + data$between_between)
+
+data$warm_pietr_catscore <- (data$within_within + data$between_within) - 
+        (data$within_between + data$between_between)
+
+# pietr catscore results competence
+t.test(data$comp_pietr_catscore[data$treat == "Lead prime"])
+r_effsize(data$comp_pietr_catscore[data$treat == "Lead prime"])
+t.test(data$comp_pietr_catscore[data$treat == "Peer prime"])
+r_effsize(data$comp_pietr_catscore[data$treat == "Peer prime"])
+
+t.test(data$comp_pietr_catscore ~ data$treat)
+r_effsize(data$comp_pietr_catscore ~ data$treat)
+
+# pietr catscore results warmth
+t.test(data$warm_pietr_catscore[data$treat == "Lead prime"])
+r_effsize(data$warm_pietr_catscore[data$treat == "Lead prime"])
+t.test(data$warm_pietr_catscore[data$treat == "Peer prime"])
+r_effsize(data$warm_pietr_catscore[data$treat == "Peer prime"])
+
+t.test(data$warm_pietr_catscore ~ data$treat)
+r_effsize(data$warm_pietr_catscore ~ data$treat)
+
+
+#This code reproduces Figure 2 in paper 
+
+#get pooled, control & treatment r values & conf intervals for comp & warm into a df
+
+figure2 <- data.frame(names = c("Pooled estimate", "Peer Prime", "Leader Prime"),
+            #categorization scores = mean(catscore)
+            catscore = c(mean(data$comp_catscore), 
+                         mean(data$comp_catscore[data$treat == "Peer prime"]),
+                         mean(data$comp_catscore[data$treat == "Lead prime"]),
+                         mean(data$warm_catscore), 
+                         mean(data$warm_catscore[data$treat == "Peer prime"]),
+                         mean(data$warm_catscore[data$treat == "Lead prime"])),
+                    
+                    #lower conf int is first value in t.test$conf.int vector
+            conf_low = c(t.test(data$comp_catscore)$conf.int[1],
+                    t.test(data$comp_catscore[data$treat == "Peer prime"])$conf.int[1],
+                    t.test(data$comp_catscore[data$treat == "Lead prime"])$conf.int[1],                     t.test(data$warm_catscore)$conf.int[1],
+                    t.test(data$warm_catscore[data$treat == "Peer prime"])$conf.int[1],
+                    t.test(data$warm_catscore[data$treat == "Lead prime"])$conf.int[1]),
+                    #higher conf int is second value in t.test$conf.int vector
+            conf_high = c(t.test(data$comp_catscore)$conf.int[2],
+                    t.test(data$comp_catscore[data$treat == "Peer prime"])$conf.int[2],                     t.test(data$comp_catscore[data$treat == "Lead prime"])$conf.int[2],
+                    t.test(data$warm_catscore)$conf.int[2],
+                    t.test(data$warm_catscore[data$treat == "Peer prime"])$conf.int[2],
+                    t.test(data$warm_catscore[data$treat == "Lead prime"])$conf.int[2]),
+            # add variable to keep track of which trait we measure
+            Dimension = c(rep("Competence", 3), rep("Likability", 3))
+                        )
+
+
+# make sure pooled estimates is the first group in the graph
+figure2$names <- fct_relevel(figure2$names, "Pooled estimate", "Peer Prime")
+figure2$Dimension <- fct_relevel(figure2$Dimension, "Likability")
+
+# Source R code for vertical dodging. 
+source("https://raw.githubusercontent.com/jaredlander/coefplot/master/R/position.r")
+
+# Plot the figure horizontal scheme
+ggplot(figure2, aes(x = catscore, y = names)) + 
+        geom_point(aes(colour = Dimension), position = position_dodgev(height = 0.5)) + 
+        geom_errorbarh(aes(xmax = conf_high, xmin = conf_low, colour = Dimension),
+                       height = 0.3, position = position_dodgev(height = 0.5)) + 
+        geom_vline(xintercept = 0) + 
+        theme_bw() + 
+        scale_colour_grey(start = 0, end = 0.7, limits = rev(levels(figure2$Dimension))) +
+        ggtitle("Figure 2. Categorization scores Study 4") +
+        xlab("Categorization scores") + 
+        ylab("")
+        
+ggsave("/Users/szasulja/Google Drive/aarhus/Paper 2/paper2_github/Figure2.pdf", width = 6, height = 2, units = "in")
+
 cat("Partner / Leader choice")
-# Is there a difference in preference? 
+
+########################################
+# 5.2.2. Partner and Leader choice
+########################################
+
 likable <- as.factor(warm)
 likable <- factor(likable, labels = c("Unlikable", "Likable"))
 competence <- as.factor(comp)
